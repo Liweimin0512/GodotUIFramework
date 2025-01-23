@@ -1,20 +1,106 @@
 [gd_scene load_steps=3 format=3 uid="uid://dvj00xb8l1imo"]
 
-[ext_resource type="Script" uid="uid://drldqlyqnyu6k" path="res://addons/godot_ui_framework/source/core/components/ui_group_component.gd" id="1_bpmkm"]
-[ext_resource type="Script" uid="uid://cbpdbjqbinepa" path="res://addons/godot_ui_framework/examples/core_demo/scenes/login_scene.gd" id="1_xtffd"]
+[ext_resource type="Script" uid="uid://cbpdbjqbinepa" path="res://addons/GodotUIFramework/examples/core_demo/scenes/login_scene.gd" id="1_xtffd"]
+[ext_resource type="Script" uid="uid://dod05jn2u0pey" path="res://addons/GodotUIFramework/source/core/components/ui_scene_component.gd" id="2_m6s8v"]
 
-[node name="LoginScene" type="Node2D"]
+[node name="LoginScene" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
 script = ExtResource("1_xtffd")
 
-[node name="ButtonInventory" type="Button" parent="."]
-offset_left = 50.0
-offset_top = 50.0
-offset_right = 122.0
-offset_bottom = 81.0
-text = "打开背包"
+[node name="MarginContainer" type="MarginContainer" parent="."]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -120.0
+offset_top = -33.0
+offset_right = 120.0
+offset_bottom = 33.0
+grow_horizontal = 2
+grow_vertical = 2
 
-[node name="UIGroupComponent" type="Node" parent="." node_paths=PackedStringArray("ui_root")]
-script = ExtResource("1_bpmkm")
-group_name = &"game_window"
-ui_root = NodePath("")
-metadata/_custom_type_script = ExtResource("1_bpmkm")
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer"]
+layout_mode = 2
+
+[node name="MarginContainer" type="MarginContainer" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer/MarginContainer"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="MarginContainer/VBoxContainer/MarginContainer/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "用户名"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="LineEditUsername" type="LineEdit" parent="MarginContainer/VBoxContainer/MarginContainer/HBoxContainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(180, 0)
+layout_mode = 2
+size_flags_horizontal = 10
+placeholder_text = "用户名"
+
+[node name="MarginContainer2" type="MarginContainer" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer/MarginContainer2"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="MarginContainer/VBoxContainer/MarginContainer2/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "密码"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="LineEditPassword" type="LineEdit" parent="MarginContainer/VBoxContainer/MarginContainer2/HBoxContainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(180, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+placeholder_text = "密码"
+virtual_keyboard_type = 6
+secret = true
+
+[node name="MarginContainer3" type="MarginContainer" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer/MarginContainer3"]
+layout_mode = 2
+
+[node name="ButtonRegister" type="Button" parent="MarginContainer/VBoxContainer/MarginContainer3/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+disabled = true
+text = "注册"
+
+[node name="ButtonLogin" type="Button" parent="MarginContainer/VBoxContainer/MarginContainer3/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "登录
+"
+
+[node name="MarginContainer4" type="MarginContainer" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="LabelMessage" type="Label" parent="MarginContainer/VBoxContainer/MarginContainer4"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0, 0, 1)
+text = "密码不正确！"
+
+[node name="UISceneComponent" type="Node" parent="."]
+script = ExtResource("2_m6s8v")
+metadata/_custom_type_script = ExtResource("2_m6s8v")
+
+[connection signal="pressed" from="MarginContainer/VBoxContainer/MarginContainer3/HBoxContainer/ButtonRegister" to="." method="_on_button_register_pressed"]
+[connection signal="pressed" from="MarginContainer/VBoxContainer/MarginContainer3/HBoxContainer/ButtonLogin" to="." method="_on_button_login_pressed"]

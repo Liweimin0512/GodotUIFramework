@@ -48,7 +48,7 @@ func _enter_tree() -> void:
 	# 保存设置
 	ProjectSettings.save()
 	# 添加自动加载单例
-	add_autoload_singleton("UIManager", "res://addons/godot_ui_framework/source/ui_manager.gd")
+	add_autoload_singleton("UIManager", "res://addons/GodotUIFramework/source/ui_manager.gd")
 
 func _exit_tree() -> void:
 	# 移除项目设置

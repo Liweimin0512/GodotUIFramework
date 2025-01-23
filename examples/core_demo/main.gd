@@ -1,4 +1,4 @@
-extends Control
+extends CanvasLayer
 
 ## 启动场景：框架初始化
 
@@ -16,6 +16,4 @@ func _ready() -> void:
 		UIManager.scene_manager.register_scene_type(ui_scene_type)
 	for ui_widget_type in _ui_widget_types:
 		UIManager.widget_manager.register_widget_type(ui_widget_type)
-
-func _on_button_inventory_pressed() -> void:
-	UIManager.scene_manager.create_scene(&"inventory_window")
+	UIManager.scene_manager.create_scene("login_scene")

@@ -4,14 +4,14 @@ class_name UISceneComponent
 ## UI场景组件，代表一个UI场景
 ## 负责管理UI场景的生命周期
 
-## 分组ID
-@export var group_id: StringName = ""
 ## 是否隐藏同组其他界面
 @export var hide_others: bool = true
 ## 是否模态
 @export var is_modal: bool = false
 ## 是否阻挡输入
 @export var block_input: bool = true
+## 分组ID
+var group_id: StringName = ""
 
 ## 场景打开
 signal scene_opened(scene: Control)
@@ -43,10 +43,6 @@ func _setup_modal_blocker() -> void:
 	owner.add_child(blocker)
 	blocker.move_to_front()
 	owner.move_to_front()
-
-## 获取分组ID
-func get_group_id() -> StringName:
-	return group_id
 
 ## 设置是否阻挡输入
 func set_block_input(value: bool) -> void:

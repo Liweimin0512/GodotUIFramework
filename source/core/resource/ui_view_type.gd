@@ -5,16 +5,16 @@ class_name UIViewType
 
 ## 加载策略
 enum PRELOAD_MODE {
-    ON_DEMAND,     # 按需加载
-    PRELOAD,       # 预加载
-    LAZY_LOAD      # 懒加载
+	ON_DEMAND,     ## 按需加载
+	PRELOAD,       ## 预加载
+	LAZY_LOAD      ## 懒加载
 }
 
 ## 缓存策略
 enum CACHE_MODE {
-    DESTROY_ON_CLOSE,    # 关闭时销毁
-    CACHE_IN_MEMORY,     # 内存中缓存
-    SMART_CACHE          # 智能缓存
+	DESTROY_ON_CLOSE,    ## 关闭时销毁
+	CACHE_IN_MEMORY,     ## 内存中缓存
+	SMART_CACHE          ## 智能缓存
 }
 
 ## 基本属性

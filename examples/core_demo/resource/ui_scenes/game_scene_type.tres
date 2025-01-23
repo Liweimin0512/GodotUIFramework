@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="UISceneType" load_steps=2 format=3 uid="uid://bjg1kyv0xvj1"]
+
+[ext_resource type="Script" uid="uid://cdtge4wnkvm45" path="res://addons/GodotUIFramework/source/core/resource/ui_scene_type.gd" id="1_5403o"]
+
+[resource]
+script = ExtResource("1_5403o")
+group_id = &"main"
+hide_others = true
+is_modal = false
+block_input = true
+ID = &"game_scene"
+scene_path = "uid://c56s2t71il4os"
+preload_mode = 1
+cache_mode = 1
+layer = 0
