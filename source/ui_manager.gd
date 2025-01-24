@@ -91,22 +91,33 @@ func remove_group(group_name: StringName) -> bool:
 func has_group(group_name: StringName) -> bool:
 	return _groups.has(group_name)
 
-func get_scene_component(scene: Control) -> UISceneComponent:
+func get_scene_component(scene: Node) -> UISceneComponent:
 	return scene.get_node_or_null("UISceneComponent")
 
-func get_widget_component(widget: Control) -> UIWidgetComponent:
+func get_widget_component(widget: Node) -> UIWidgetComponent:
 	return widget.get_node_or_null("UIWidgetComponent")
+
+func get_view_component(view: Node) -> UIViewComponent:
+	if is_widget(view):
+		return get_widget_component(view) as UIViewComponent
+	elif is_scene(view):
+		return get_scene_component(view) as UIViewComponent
+	push_error("can not found view component in node: {0}".format([view]))
+	return null
 
 func get_group_component(group: Control) -> UIGroupComponent:
 	return group.get_node_or_null("UIGroupComponent")
 
-func is_widget(widget: Control) -> bool:
+func is_view(node : Node) -> bool:
+	return is_widget(node) or is_scene(node)
+
+func is_widget(widget: Node) -> bool:
 	return widget.has_node("UIWidgetComponent")
 
-func is_group(group: Control) -> bool:
+func is_group(group: Node) -> bool:
 	return group.has_node("UIGroupComponent")
 
-func is_scene(scene: Control) -> bool:
+func is_scene(scene: Node) -> bool:
 	return scene.has_node("UISceneComponent")
 
 ## 获取模块

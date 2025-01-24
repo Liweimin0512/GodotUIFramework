@@ -27,3 +27,7 @@ enum CACHE_MODE {
 @export var layer: int = 0
 ## 过渡动画
 @export var transition: UITransition
+
+## 验证配置是否有效
+func validate() -> bool:
+	return true

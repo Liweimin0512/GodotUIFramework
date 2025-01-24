@@ -74,3 +74,32 @@ func destroy_view(view: Control) -> void:
 	var component = UIManager.get_view_component(view)
 	if component:
 		component.dispose()
+
+## 获取视图ID
+func get_view_id(view: Control) -> StringName:
+	var view_component = UIManager.get_view_component(view)
+	if not view_component:
+		push_error("can not found view component in node: {0}".format([view]))
+		return ""
+	var config : UIViewType = view_component.config as UIViewType
+	return config.ID
+
+## 获取视图数据
+## [param view] 视图实例
+## [return] 视图数据
+func get_view_data(view: Control) -> Dictionary:
+	var component = UIManager.get_view_component(view)
+	if not component:
+		push_error("View component not found: %s" % view.name)
+		return {}
+	return component.get_data()
+
+## 更新视图数据
+## [param view] 视图实例
+## [param data] 更新的数据
+func update_view_data(view: Control, data: Dictionary) -> void:
+	var component : UIViewComponent = UIManager.get_view_component(view)
+	if not component:
+		push_error("View component not found: %s" % view.name)
+		return
+	component.update_data(data)

@@ -1,0 +1,20 @@
+[gd_scene load_steps=2 format=3 uid="uid://box6m44ri88l7"]
+
+[ext_resource type="Texture2D" uid="uid://beq1qw4n23ku8" path="res://icon.svg" id="1_wmyms"]
+
+[node name="SelfMessage" type="MarginContainer"]
+size_flags_horizontal = 8
+
+[node name="HBoxContainer" type="HBoxContainer" parent="."]
+layout_mode = 2
+
+[node name="Label2" type="Label" parent="HBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "测试消息好多字好多字测试消息好多字好多字"
+
+[node name="TextureRect" type="TextureRect" parent="HBoxContainer"]
+custom_minimum_size = Vector2(32, 32)
+layout_mode = 2
+texture = ExtResource("1_wmyms")
+expand_mode = 1

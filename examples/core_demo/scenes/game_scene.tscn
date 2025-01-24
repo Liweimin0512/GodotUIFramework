@@ -1,8 +1,71 @@
-[gd_scene load_steps=2 format=3 uid="uid://c56s2t71il4os"]
+[gd_scene load_steps=7 format=3 uid="uid://c56s2t71il4os"]
 
 [ext_resource type="Script" uid="uid://b5ujn1ntx2its" path="res://addons/GodotUIFramework/examples/core_demo/scenes/game_scene.gd" id="1_ua1ap"]
+[ext_resource type="Script" uid="uid://dod05jn2u0pey" path="res://addons/GodotUIFramework/source/core/components/ui_scene_component.gd" id="2_s1qkn"]
+[ext_resource type="PackedScene" uid="uid://c0k22an14hpxm" path="res://addons/GodotUIFramework/examples/core_demo/widgets/game/turn_indicator.tscn" id="3_ocqvj"]
+[ext_resource type="PackedScene" uid="uid://bhn1g0j8mk134" path="res://addons/GodotUIFramework/examples/core_demo/widgets/game/character_status.tscn" id="4_t8t8m"]
+[ext_resource type="PackedScene" uid="uid://cmroh6ct6sgp7" path="res://addons/GodotUIFramework/examples/core_demo/widgets/game/battle_log_container.tscn" id="5_7osvk"]
+[ext_resource type="PackedScene" uid="uid://d34rmdtbdyjkj" path="res://addons/GodotUIFramework/examples/core_demo/widgets/game/skill_buttons.tscn" id="6_afy4p"]
 
 [node name="GameScene" type="Control"]
 layout_mode = 3
-anchors_preset = 0
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
 script = ExtResource("1_ua1ap")
+
+[node name="TurnIndicator" parent="." instance=ExtResource("3_ocqvj")]
+unique_name_in_owner = true
+layout_mode = 1
+offset_left = -72.0
+offset_right = 72.0
+
+[node name="PlayerStatus" parent="." instance=ExtResource("4_t8t8m")]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = -1
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 10.0
+offset_top = -292.0
+offset_right = 220.0
+offset_bottom = -205.0
+grow_vertical = 0
+
+[node name="EnemyStatus" parent="." instance=ExtResource("4_t8t8m")]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -220.0
+offset_top = -292.0
+offset_right = -10.0
+offset_bottom = -205.0
+grow_horizontal = 0
+grow_vertical = 0
+
+[node name="BattleLogContainer" parent="." instance=ExtResource("5_7osvk")]
+unique_name_in_owner = true
+layout_mode = 1
+offset_top = -32.0
+offset_bottom = 107.0
+
+[node name="SkillButtons" parent="." instance=ExtResource("6_afy4p")]
+unique_name_in_owner = true
+layout_mode = 0
+anchors_preset = 0
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 0.0
+anchor_bottom = 0.0
+grow_horizontal = 1
+grow_vertical = 1
+
+[node name="UISceneComponent" type="Node" parent="."]
+script = ExtResource("2_s1qkn")
+metadata/_custom_type_script = ExtResource("2_s1qkn")

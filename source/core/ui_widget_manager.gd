@@ -4,7 +4,7 @@ class_name UIWidgetManager
 ## 创建Widget
 func create_widget(id: StringName, parent: Node = null, data: Dictionary = {}) -> Control:
 	# 1. 尝试从对象池获取可重用的widget
-	var widget_type = get_view_type(id)
+	var widget_type : UIWidgetType = get_view_type(id)
 	if widget_type and widget_type.reusable:
 		var cached_widget = UIManager.resource_manager.get_instance(id) as Control
 		if cached_widget:
@@ -69,3 +69,15 @@ func recycle_widgets(widgets: Array) -> void:
 ## 注册Widget类型
 func register_widget_type(widget_type: UIWidgetType) -> void:
 	super.register_view_type(widget_type)
+
+## 获取组件数据
+## [param widget] 组件实例
+## [return] 组件数据
+func get_widget_data(widget: Control) -> Dictionary:
+	return get_view_data(widget)
+
+## 更新组件数据
+## [param widget] 组件实例
+## [param data] 更新的数据
+func update_widget_data(widget: Control, data: Dictionary) -> void:
+	update_view_data(widget, data)

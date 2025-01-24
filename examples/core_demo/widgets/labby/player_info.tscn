@@ -1,0 +1,37 @@
+[gd_scene load_steps=4 format=3 uid="uid://jcj6be72bli4"]
+
+[ext_resource type="Script" uid="uid://e77sjdta4wym" path="res://addons/GodotUIFramework/examples/core_demo/widgets/labby/player_info.gd" id="1_1w8cm"]
+[ext_resource type="Texture2D" uid="uid://beq1qw4n23ku8" path="res://icon.svg" id="1_xu7q1"]
+[ext_resource type="Script" uid="uid://1mpayve22prh" path="res://addons/GodotUIFramework/source/core/components/ui_widget_component.gd" id="3_mwgpp"]
+
+[node name="PlayerInfo" type="MarginContainer"]
+script = ExtResource("1_1w8cm")
+
+[node name="HBoxContainer" type="HBoxContainer" parent="."]
+layout_mode = 2
+
+[node name="AvatarButton" type="TextureButton" parent="HBoxContainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(32, 32)
+layout_mode = 2
+texture_normal = ExtResource("1_xu7q1")
+ignore_texture_size = true
+stretch_mode = 0
+
+[node name="PlayerName" type="Label" parent="HBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 8
+text = "玩家名称"
+
+[node name="PlayerLevel" type="Label" parent="HBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 8
+text = "Lv. 99"
+
+[node name="UIWidgetComponent" type="Node" parent="."]
+script = ExtResource("3_mwgpp")
+metadata/_custom_type_script = ExtResource("3_mwgpp")
+
+[connection signal="gui_input" from="." to="." method="_on_gui_input"]

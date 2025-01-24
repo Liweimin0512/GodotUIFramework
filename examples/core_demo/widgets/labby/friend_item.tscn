@@ -1,0 +1,34 @@
+[gd_scene load_steps=2 format=3 uid="uid://c0ilygvlealku"]
+
+[ext_resource type="Texture2D" uid="uid://beq1qw4n23ku8" path="res://icon.svg" id="1_bilvo"]
+
+[node name="FriendItem" type="MarginContainer"]
+
+[node name="Panel" type="Panel" parent="."]
+layout_mode = 2
+
+[node name="MarginContainer" type="MarginContainer" parent="."]
+layout_mode = 2
+theme_override_constants/margin_left = 5
+theme_override_constants/margin_top = 2
+theme_override_constants/margin_right = 5
+theme_override_constants/margin_bottom = 2
+
+[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer"]
+layout_mode = 2
+
+[node name="Avatar" type="TextureRect" parent="MarginContainer/HBoxContainer"]
+custom_minimum_size = Vector2(32, 32)
+layout_mode = 2
+texture = ExtResource("1_bilvo")
+expand_mode = 1
+
+[node name="LabelName" type="Label" parent="MarginContainer/HBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "好友名"
+
+[node name="LabelStatus" type="Label" parent="MarginContainer/HBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 8
+text = "状态"

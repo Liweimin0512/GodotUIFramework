@@ -1,0 +1,109 @@
+[gd_scene load_steps=3 format=3 uid="uid://ov7snxt5cvvf"]
+
+[ext_resource type="PackedScene" uid="uid://cxbyew4sgn1m7" path="res://addons/GodotUIFramework/examples/core_demo/widgets/labby/shop_item.tscn" id="1_28f66"]
+[ext_resource type="Script" uid="uid://dod05jn2u0pey" path="res://addons/GodotUIFramework/source/core/components/ui_scene_component.gd" id="2_dx08s"]
+
+[node name="ShopPanel" type="MarginContainer"]
+size_flags_horizontal = 4
+
+[node name="Panel" type="Panel" parent="."]
+layout_mode = 2
+
+[node name="MarginContainer" type="MarginContainer" parent="."]
+layout_mode = 2
+theme_override_constants/margin_left = 5
+theme_override_constants/margin_top = 5
+theme_override_constants/margin_right = 5
+theme_override_constants/margin_bottom = 5
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer"]
+layout_mode = 2
+
+[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="ButtonHot" type="Button" parent="MarginContainer/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "商店热卖"
+
+[node name="ButtonItem" type="Button" parent="MarginContainer/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "道具商城"
+
+[node name="ButtonGift" type="Button" parent="MarginContainer/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "礼包商城"
+
+[node name="ScrollContainer" type="ScrollContainer" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+horizontal_scroll_mode = 0
+vertical_scroll_mode = 3
+
+[node name="GridContainer" type="GridContainer" parent="MarginContainer/VBoxContainer/ScrollContainer"]
+layout_mode = 2
+columns = 6
+
+[node name="ShopItem" parent="MarginContainer/VBoxContainer/ScrollContainer/GridContainer" instance=ExtResource("1_28f66")]
+layout_mode = 2
+
+[node name="ShopItem2" parent="MarginContainer/VBoxContainer/ScrollContainer/GridContainer" instance=ExtResource("1_28f66")]
+layout_mode = 2
+
+[node name="ShopItem3" parent="MarginContainer/VBoxContainer/ScrollContainer/GridContainer" instance=ExtResource("1_28f66")]
+layout_mode = 2
+
+[node name="ShopItem4" parent="MarginContainer/VBoxContainer/ScrollContainer/GridContainer" instance=ExtResource("1_28f66")]
+layout_mode = 2
+
+[node name="ShopItem5" parent="MarginContainer/VBoxContainer/ScrollContainer/GridContainer" instance=ExtResource("1_28f66")]
+layout_mode = 2
+
+[node name="ShopItem6" parent="MarginContainer/VBoxContainer/ScrollContainer/GridContainer" instance=ExtResource("1_28f66")]
+layout_mode = 2
+
+[node name="ShopItem7" parent="MarginContainer/VBoxContainer/ScrollContainer/GridContainer" instance=ExtResource("1_28f66")]
+layout_mode = 2
+
+[node name="ShopItem8" parent="MarginContainer/VBoxContainer/ScrollContainer/GridContainer" instance=ExtResource("1_28f66")]
+layout_mode = 2
+
+[node name="ShopItem9" parent="MarginContainer/VBoxContainer/ScrollContainer/GridContainer" instance=ExtResource("1_28f66")]
+layout_mode = 2
+
+[node name="ShopItem10" parent="MarginContainer/VBoxContainer/ScrollContainer/GridContainer" instance=ExtResource("1_28f66")]
+layout_mode = 2
+
+[node name="ShopItem11" parent="MarginContainer/VBoxContainer/ScrollContainer/GridContainer" instance=ExtResource("1_28f66")]
+layout_mode = 2
+
+[node name="ShopItem12" parent="MarginContainer/VBoxContainer/ScrollContainer/GridContainer" instance=ExtResource("1_28f66")]
+layout_mode = 2
+
+[node name="ShopItem13" parent="MarginContainer/VBoxContainer/ScrollContainer/GridContainer" instance=ExtResource("1_28f66")]
+layout_mode = 2
+
+[node name="ShopItem14" parent="MarginContainer/VBoxContainer/ScrollContainer/GridContainer" instance=ExtResource("1_28f66")]
+layout_mode = 2
+
+[node name="ShopItem15" parent="MarginContainer/VBoxContainer/ScrollContainer/GridContainer" instance=ExtResource("1_28f66")]
+layout_mode = 2
+
+[node name="ShopItem16" parent="MarginContainer/VBoxContainer/ScrollContainer/GridContainer" instance=ExtResource("1_28f66")]
+layout_mode = 2
+
+[node name="ShopItem17" parent="MarginContainer/VBoxContainer/ScrollContainer/GridContainer" instance=ExtResource("1_28f66")]
+layout_mode = 2
+
+[node name="ShopItem18" parent="MarginContainer/VBoxContainer/ScrollContainer/GridContainer" instance=ExtResource("1_28f66")]
+layout_mode = 2
+
+[node name="ShopItem19" parent="MarginContainer/VBoxContainer/ScrollContainer/GridContainer" instance=ExtResource("1_28f66")]
+layout_mode = 2
+
+[node name="UISceneComponent" type="Node" parent="."]
+script = ExtResource("2_dx08s")
+metadata/_custom_type_script = ExtResource("2_dx08s")

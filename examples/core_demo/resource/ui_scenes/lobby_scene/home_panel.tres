@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="UISceneType" load_steps=2 format=3 uid="uid://dsvryiqr76p8c"]
+
+[ext_resource type="Script" uid="uid://cdtge4wnkvm45" path="res://addons/GodotUIFramework/source/core/resource/ui_scene_type.gd" id="1_icoxp"]
+
+[resource]
+script = ExtResource("1_icoxp")
+group_id = &"lobby"
+hide_others = true
+is_modal = false
+block_input = true
+ID = &"home_panel"
+scene_path = "uid://bvj8te6sbune5"
+preload_mode = 0
+cache_mode = 0
+layer = 0
+metadata/_custom_type_script = ExtResource("1_icoxp")

@@ -1,0 +1,108 @@
+[gd_scene load_steps=5 format=3 uid="uid://3puc42ussu2d"]
+
+[ext_resource type="PackedScene" uid="uid://c0ilygvlealku" path="res://addons/GodotUIFramework/examples/core_demo/widgets/labby/friend_item.tscn" id="1_18in7"]
+[ext_resource type="PackedScene" uid="uid://bst5rob5gnt20" path="res://addons/GodotUIFramework/examples/core_demo/widgets/labby/friend_message.tscn" id="2_85edj"]
+[ext_resource type="PackedScene" uid="uid://box6m44ri88l7" path="res://addons/GodotUIFramework/examples/core_demo/widgets/labby/self_message.tscn" id="3_k8pp1"]
+[ext_resource type="Script" uid="uid://dod05jn2u0pey" path="res://addons/GodotUIFramework/source/core/components/ui_scene_component.gd" id="4_goh51"]
+
+[node name="SocialPanel" type="MarginContainer"]
+offset_right = 400.0
+offset_bottom = 238.0
+size_flags_horizontal = 4
+
+[node name="Panel" type="Panel" parent="."]
+layout_mode = 2
+
+[node name="MarginContainer" type="MarginContainer" parent="."]
+layout_mode = 2
+theme_override_constants/margin_left = 5
+theme_override_constants/margin_top = 5
+theme_override_constants/margin_right = 5
+theme_override_constants/margin_bottom = 5
+
+[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer"]
+layout_mode = 2
+
+[node name="ScrollContainer" type="ScrollContainer" parent="MarginContainer/HBoxContainer"]
+layout_mode = 2
+horizontal_scroll_mode = 0
+vertical_scroll_mode = 3
+
+[node name="FriendList" type="VBoxContainer" parent="MarginContainer/HBoxContainer/ScrollContainer"]
+layout_mode = 2
+
+[node name="FriendItem" parent="MarginContainer/HBoxContainer/ScrollContainer/FriendList" instance=ExtResource("1_18in7")]
+layout_mode = 2
+
+[node name="FriendItem2" parent="MarginContainer/HBoxContainer/ScrollContainer/FriendList" instance=ExtResource("1_18in7")]
+layout_mode = 2
+
+[node name="FriendItem3" parent="MarginContainer/HBoxContainer/ScrollContainer/FriendList" instance=ExtResource("1_18in7")]
+layout_mode = 2
+
+[node name="FriendItem4" parent="MarginContainer/HBoxContainer/ScrollContainer/FriendList" instance=ExtResource("1_18in7")]
+layout_mode = 2
+
+[node name="VSeparator" type="VSeparator" parent="MarginContainer/HBoxContainer"]
+layout_mode = 2
+
+[node name="ChatWindow" type="MarginContainer" parent="MarginContainer/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer/HBoxContainer/ChatWindow"]
+layout_mode = 2
+
+[node name="MarginContainer" type="MarginContainer" parent="MarginContainer/HBoxContainer/ChatWindow/VBoxContainer"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="MarginContainer/HBoxContainer/ChatWindow/VBoxContainer/MarginContainer"]
+layout_mode = 2
+text = "好友名"
+
+[node name="HSeparator" type="HSeparator" parent="MarginContainer/HBoxContainer/ChatWindow/VBoxContainer"]
+layout_mode = 2
+
+[node name="MarginContainer2" type="MarginContainer" parent="MarginContainer/HBoxContainer/ChatWindow/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="ScrollContainer" type="ScrollContainer" parent="MarginContainer/HBoxContainer/ChatWindow/VBoxContainer/MarginContainer2"]
+custom_minimum_size = Vector2(150, 0)
+layout_mode = 2
+horizontal_scroll_mode = 0
+vertical_scroll_mode = 3
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer/HBoxContainer/ChatWindow/VBoxContainer/MarginContainer2/ScrollContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="FriendMessage" parent="MarginContainer/HBoxContainer/ChatWindow/VBoxContainer/MarginContainer2/ScrollContainer/VBoxContainer" instance=ExtResource("2_85edj")]
+layout_mode = 2
+
+[node name="SelfMessage" parent="MarginContainer/HBoxContainer/ChatWindow/VBoxContainer/MarginContainer2/ScrollContainer/VBoxContainer" instance=ExtResource("3_k8pp1")]
+layout_mode = 2
+
+[node name="HSeparator2" type="HSeparator" parent="MarginContainer/HBoxContainer/ChatWindow/VBoxContainer"]
+layout_mode = 2
+
+[node name="MarginContainer3" type="MarginContainer" parent="MarginContainer/HBoxContainer/ChatWindow/VBoxContainer"]
+layout_mode = 2
+
+[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer/HBoxContainer/ChatWindow/VBoxContainer/MarginContainer3"]
+layout_mode = 2
+
+[node name="TextEdit" type="TextEdit" parent="MarginContainer/HBoxContainer/ChatWindow/VBoxContainer/MarginContainer3/HBoxContainer"]
+custom_minimum_size = Vector2(0, 50)
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Button" type="Button" parent="MarginContainer/HBoxContainer/ChatWindow/VBoxContainer/MarginContainer3/HBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 8
+text = "发送"
+
+[node name="UISceneComponent" type="Node" parent="."]
+script = ExtResource("4_goh51")
+metadata/_custom_type_script = ExtResource("4_goh51")

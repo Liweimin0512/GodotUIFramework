@@ -1,0 +1,28 @@
+[gd_scene load_steps=2 format=3 uid="uid://bst5rob5gnt20"]
+
+[ext_resource type="Texture2D" uid="uid://beq1qw4n23ku8" path="res://icon.svg" id="1_dcv81"]
+
+[node name="FriendMessage" type="MarginContainer"]
+size_flags_horizontal = 0
+
+[node name="HBoxContainer" type="HBoxContainer" parent="."]
+layout_mode = 2
+
+[node name="TextureRect" type="TextureRect" parent="HBoxContainer"]
+custom_minimum_size = Vector2(32, 32)
+layout_mode = 2
+texture = ExtResource("1_dcv81")
+expand_mode = 1
+
+[node name="VBoxContainer" type="VBoxContainer" parent="HBoxContainer"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="HBoxContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 8
+text = "好友名"
+
+[node name="Label2" type="Label" parent="HBoxContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "测试消息"

@@ -1,7 +1,15 @@
-[gd_scene load_steps=3 format=3 uid="uid://cdg0qo6phgolk"]
+[gd_scene load_steps=10 format=3 uid="uid://cdg0qo6phgolk"]
 
 [ext_resource type="Script" uid="uid://ltwauhtm8irk" path="res://addons/GodotUIFramework/examples/core_demo/scenes/lobby_scene.gd" id="1_3vguu"]
 [ext_resource type="Script" uid="uid://dod05jn2u0pey" path="res://addons/GodotUIFramework/source/core/components/ui_scene_component.gd" id="2_garjm"]
+[ext_resource type="PackedScene" uid="uid://jcj6be72bli4" path="res://addons/GodotUIFramework/examples/core_demo/widgets/labby/player_info.tscn" id="2_ka48l"]
+[ext_resource type="Script" uid="uid://cdtge4wnkvm45" path="res://addons/GodotUIFramework/source/core/resource/ui_scene_type.gd" id="2_wr5le"]
+[ext_resource type="Resource" uid="uid://dsvryiqr76p8c" path="res://addons/GodotUIFramework/examples/core_demo/resource/ui_scenes/lobby_scene/home_panel.tres" id="3_016x6"]
+[ext_resource type="Script" uid="uid://drldqlyqnyu6k" path="res://addons/GodotUIFramework/source/core/components/ui_group_component.gd" id="3_ka48l"]
+[ext_resource type="Resource" uid="uid://cymdqfbft0kdm" path="res://addons/GodotUIFramework/examples/core_demo/resource/ui_scenes/lobby_scene/shop_panel.tres" id="4_y2utg"]
+[ext_resource type="Resource" uid="uid://b3j7bhfsmlr8g" path="res://addons/GodotUIFramework/examples/core_demo/resource/ui_scenes/lobby_scene/social_panel.tres" id="5_4dfhe"]
+
+[sub_resource type="ButtonGroup" id="ButtonGroup_wr5le"]
 
 [node name="LobbyScene" type="Control"]
 layout_mode = 3
@@ -11,7 +19,95 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_3vguu")
+_scene_types = Array[ExtResource("2_wr5le")]([ExtResource("3_016x6"), ExtResource("4_y2utg"), ExtResource("5_4dfhe")])
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 0
+
+[node name="TopBar" type="MarginContainer" parent="VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="Panel" type="Panel" parent="VBoxContainer/TopBar"]
+layout_mode = 2
+
+[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer/TopBar"]
+layout_mode = 2
+
+[node name="PlayerInfo" parent="VBoxContainer/TopBar/HBoxContainer" instance=ExtResource("2_ka48l")]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="ResourceBar" type="MarginContainer" parent="VBoxContainer/TopBar/HBoxContainer"]
+layout_mode = 2
+
+[node name="MainArea" type="MarginContainer" parent="VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/margin_left = 30
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 30
+theme_override_constants/margin_bottom = 10
+
+[node name="UIGroupComponent" type="Node" parent="VBoxContainer/MainArea" node_paths=PackedStringArray("ui_root")]
+script = ExtResource("3_ka48l")
+group_name = &"lobby"
+ui_root = NodePath("..")
+metadata/_custom_type_script = ExtResource("3_ka48l")
+
+[node name="BottomBar" type="MarginContainer" parent="VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="Panel" type="Panel" parent="VBoxContainer/BottomBar"]
+layout_mode = 2
+
+[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer/BottomBar"]
+layout_mode = 2
+alignment = 2
+
+[node name="ButtonContainer" type="HBoxContainer" parent="VBoxContainer/BottomBar/HBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 8
+
+[node name="ButtonHome" type="Button" parent="VBoxContainer/BottomBar/HBoxContainer/ButtonContainer"]
+custom_minimum_size = Vector2(55, 0)
+layout_mode = 2
+toggle_mode = true
+button_group = SubResource("ButtonGroup_wr5le")
+text = "Home"
+
+[node name="ButtonShop" type="Button" parent="VBoxContainer/BottomBar/HBoxContainer/ButtonContainer"]
+custom_minimum_size = Vector2(55, 0)
+layout_mode = 2
+toggle_mode = true
+button_group = SubResource("ButtonGroup_wr5le")
+text = "Shop"
+
+[node name="ButtonSocial" type="Button" parent="VBoxContainer/BottomBar/HBoxContainer/ButtonContainer"]
+custom_minimum_size = Vector2(55, 0)
+layout_mode = 2
+toggle_mode = true
+button_group = SubResource("ButtonGroup_wr5le")
+text = "Social"
+
+[node name="ButtonStartGame" type="Button" parent="VBoxContainer/BottomBar/HBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 22
+text = "StartGame
+"
 
 [node name="UISceneComponent" type="Node" parent="."]
 script = ExtResource("2_garjm")
 metadata/_custom_type_script = ExtResource("2_garjm")
+
+[connection signal="pressed" from="VBoxContainer/TopBar/HBoxContainer/PlayerInfo" to="." method="_on_player_info_pressed"]
+[connection signal="pressed" from="VBoxContainer/BottomBar/HBoxContainer/ButtonStartGame" to="." method="_on_button_start_game_pressed"]

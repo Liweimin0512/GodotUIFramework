@@ -1,0 +1,26 @@
+[gd_scene load_steps=3 format=3 uid="uid://c0k22an14hpxm"]
+
+[ext_resource type="Script" uid="uid://b5otmnskol3it" path="res://addons/GodotUIFramework/examples/core_demo/widgets/game/turn_indicator.gd" id="1_3busb"]
+[ext_resource type="Script" uid="uid://1mpayve22prh" path="res://addons/GodotUIFramework/source/core/components/ui_widget_component.gd" id="1_kawl0"]
+
+[node name="TurnIndicator" type="MarginContainer"]
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -20.0
+offset_right = 20.0
+offset_bottom = 40.0
+grow_horizontal = 2
+script = ExtResource("1_3busb")
+
+[node name="Label" type="Label" parent="."]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 4
+text = "回合指示器显示内容"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="UIWidgetComponent" type="Node" parent="."]
+script = ExtResource("1_kawl0")
+metadata/_custom_type_script = ExtResource("1_kawl0")
