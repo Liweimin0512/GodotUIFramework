@@ -2,7 +2,7 @@ extends Object
 
 ## 角色数据结构
 class CharacterData:
-	extends BaseData
+	extends RefCounted
 
 	var name: String
 	var hp: int
@@ -31,7 +31,15 @@ class CharacterData:
 			"skills": skills
 		}
 	
-	static func _from_dict(data: Dictionary) -> CharacterData:
+	static func from_dict(data: Dictionary) -> CharacterData:
+		if data.is_empty():
+			push_error("[GameDataTypes] 数据为空")
+			return null
+		
+		if not check_data(data):
+			push_error("[GameDataTypes] 数据不合法")
+			return null
+		
 		var char = CharacterData.new(
 			data.get("name", ""),
 			data.get("hp", 0),
@@ -40,7 +48,7 @@ class CharacterData:
 		)
 		return char
 
-	static func _check_data(data: Dictionary) -> bool:
+	static func check_data(data: Dictionary) -> bool:
 		if not data.has("name"):
 			return false
 		if not data.has("hp"):
@@ -93,7 +101,15 @@ class PlayerData:
 		d.merge(super())
 		return d
 	
-	static func _from_dict(data: Dictionary) -> PlayerData:
+	static func from_dict(data: Dictionary) -> PlayerData:
+		if data.is_empty():
+			push_error("[GameDataTypes] 数据为空")
+			return null
+		
+		if not check_data(data):
+			push_error("[GameDataTypes] 数据不合法")
+			return null
+		
 		var player = PlayerData.new(
 			data.get("name", ""),
 			data.get("level", 0),
@@ -106,7 +122,7 @@ class PlayerData:
 			)
 		return player
 
-	static func _check_data(data: Dictionary) -> bool:
+	static func check_data(data: Dictionary) -> bool:
 		if not super(data): return false
 		if not data.has("level"):
 			return false
@@ -144,7 +160,15 @@ class EnemyData:
 		d.merge(super())
 		return d
 
-	static func _from_dict(data: Dictionary) -> EnemyData:
+	static func from_dict(data: Dictionary) -> EnemyData:
+		if data.is_empty():
+			push_error("[GameDataTypes] 数据为空")
+			return null
+		
+		if not check_data(data):
+			push_error("[GameDataTypes] 数据不合法")
+			return null
+		
 		var enemy = EnemyData.new(
 			data.get("name", ""),
 			data.get("level_range", [0, 0]),
@@ -155,7 +179,7 @@ class EnemyData:
 		)
 		return enemy
 
-	static func _check_data(data: Dictionary) -> bool:
+	static func check_data(data: Dictionary) -> bool:
 		if not super(data): return false
 		if not data.has("level_range"):
 			return false
@@ -165,7 +189,7 @@ class EnemyData:
 
 ## 场景数据结构
 class GameSceneData:
-	extends BaseData
+	extends RefCounted
 
 	var player: PlayerData
 	var enemy: EnemyData
@@ -191,7 +215,15 @@ class GameSceneData:
 			"state": state
 		}
 
-	static func _from_dict(data: Dictionary) -> GameSceneData:
+	static func from_dict(data: Dictionary) -> GameSceneData:
+		if data.is_empty():
+			push_error("[GameDataTypes] 数据为空")
+			return null
+		
+		if not check_data(data):
+			push_error("[GameDataTypes] 数据不合法")
+			return null
+		
 		if not data.has("player"):
 			return null
 		if not data.has("enemy"):
@@ -201,14 +233,14 @@ class GameSceneData:
 		if not data.has("state"):
 			return null
 		var scene_data = GameSceneData.new(
-			CharacterData.from_dict(data.get("player", {})),
-			CharacterData.from_dict(data.get("enemy", {})),
+			PlayerData.from_dict(data.get("player", {})),
+			EnemyData.from_dict(data.get("enemy", {})),
 			data.get("turn_count", 1),
 			data.get("state", 0)
 		)
 		return scene_data
 
-	static func _check_data(data: Dictionary) -> bool:
+	static func check_data(data: Dictionary) -> bool:
 		if not data.has("player"):
 			return false
 		if not data.has("enemy"):
@@ -221,47 +253,65 @@ class GameSceneData:
 
 ## 技能数据结构
 class SkillData:
-	extends BaseData
+	extends RefCounted
 
 	var id: String
 	var name: String
 	var description: String
 	var damage: int
 	var mp_cost: int
+	var heal: int
+	var icon_path: String
 
 	func _init(
 			p_id : String = "",
 			p_name : String = "",
 			p_description : String = "",
 			p_damage : int = 0,
-			p_mp_cost : int = 0
+			p_mp_cost : int = 0,
+			p_heal : int = 0,
+			p_icon_path : String = ""
 			) -> void:
 		id = p_id
 		name = p_name
 		description = p_description
+		heal = p_heal
 		damage = p_damage
 		mp_cost = p_mp_cost
+		icon_path = p_icon_path
 
 	func to_dict() -> Dictionary:
 		return {
 			"id": id,
 			"name": name,
 			"description": description,
+			"heal": heal,
 			"damage": damage,
-			"mp_cost": mp_cost
+			"mp_cost": mp_cost,
+			"icon_path": icon_path
 		}
 	
-	static func _from_dict(data: Dictionary) -> SkillData:
+	static func from_dict(data: Dictionary) -> SkillData:
+		if data.is_empty():
+			push_error("[GameDataTypes] 数据为空")
+			return null
+		
+		if not check_data(data):
+			push_error("[GameDataTypes] 数据不合法")
+			return null
+		
 		var skill = SkillData.new(
 			data.get("id", ""),
 			data.get("name", ""),
 			data.get("description", ""),
 			data.get("damage", 0),
-			data.get("mp_cost", 0)
+			data.get("mp_cost", 0),
+			data.get("heal", 0),
+			data.get("icon_path", "")
 		)
 		return skill
 
-	static func _check_data(data: Dictionary) -> bool:
+	static func check_data(data: Dictionary) -> bool:
 		if not data.has("id"):
 			return false
 		if not data.has("name"):
@@ -270,13 +320,17 @@ class SkillData:
 			return false
 		if not data.has("damage"):
 			return false
+		if not data.has("heal"):
+			return false
 		if not data.has("mp_cost"):
+			return false
+		if not data.has("icon_path"):
 			return false
 		return true
 
 ## 战斗日志数据结构
 class BattleLogData:
-	extends BaseData
+	extends RefCounted
 
 	var type: String
 	var text: String
@@ -299,7 +353,15 @@ class BattleLogData:
 		}
 
 	## 将字典转换为战斗日志数据实例
-	static func _from_dict(data: Dictionary) -> BattleLogData:
+	static func from_dict(data: Dictionary) -> BattleLogData:
+		if data.is_empty():
+			push_error("[GameDataTypes] 数据为空")
+			return null
+		
+		if not check_data(data):
+			push_error("[GameDataTypes] 数据不合法")
+			return null
+		
 		var log = BattleLogData.new(
 			data.get("text", ""),
 			data.get("type", ""),
@@ -308,32 +370,7 @@ class BattleLogData:
 		return log
 
 	## 检查数据是否合法
-	static func _check_data(data: Dictionary) -> bool:
+	static func check_data(data: Dictionary) -> bool:
 		if data.has("text") and data.has("type") and data.has("color"):
 			return true
 		return false
-
-## 数据结构基类
-class BaseData:
-
-	## 将数据实例转换为字典
-	func to_dict() -> Dictionary:
-		return {}
-	
-	## 将字典转换为数据实例
-	static func from_dict(data: Dictionary) -> BaseData:
-		if data.is_empty(): 
-			push_error("[GameDataTypes] 数据为空")
-			return null
-		if not _check_data(data):
-			push_error("[GameDataTypes] 数据不合法")
-			return null
-		return _from_dict(data)
-
-	## 检查数据是否合法
-	static func _check_data(data: Dictionary) -> bool:
-		return true
-	
-	## 创建一个新的数据实例,子类需要重写此函数
-	static func _from_dict(data: Dictionary) -> BaseData:
-		return BaseData.new()

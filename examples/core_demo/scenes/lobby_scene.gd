@@ -6,8 +6,9 @@ const GameDataTypes = preload("res://addons/GodotUIFramework/examples/core_demo/
 
 @onready var player_info: MarginContainer = %PlayerInfo
 @onready var button_container: HBoxContainer = %ButtonContainer
+@onready var ui_group_component: UIGroupComponent = %UIGroupComponent
+@onready var ui_scene_component: UISceneComponent = $UISceneComponent
 
-@export var _scene_types : Array[UISceneType] = []
 # 当前选中的导航标签
 var _current_tab: String = "home"
 var _button_group: ButtonGroup = ButtonGroup.new()
@@ -17,17 +18,10 @@ var _button_scene_map: Dictionary[String, String] = {
 	"Shop" : "shop_panel",
 	"Social" : "social_panel"
 }
-var _player_data : GameDataTypes.CharacterData
+var _player_data : GameDataTypes.PlayerData
 
 func _ready() -> void:
 	_init_buttons()
-	for scene_type in _scene_types:
-		UIManager.scene_manager.register_scene_type(scene_type)
-
-func _setup(data: Dictionary) -> void:
-	_player_data = GameDataTypes.CharacterData.from_dict(data)
-	var home_button : Button = button_container.get_child(0)
-	home_button.button_pressed = true
 
 ## 初始化按钮组
 func _init_buttons() -> void:
@@ -39,8 +33,10 @@ func _on_button_group_pressed(button: Button) -> void:
 	var button_text := button.text
 	var button_panel: String = _button_scene_map.get(button_text, "")
 	if button_panel.is_empty(): return
-	var panel = await UIManager.scene_manager.switch_scene(button_panel)
-	if panel == null: return
+	var panel = await ui_group_component.switch_scene(button_panel)
+	if panel == null: 
+		push_error("Switch scene failed")
+		return
 
 func _on_player_info_pressed() -> void:
 	print("_on_player_info_pressed")
@@ -55,4 +51,10 @@ func _on_button_start_game_pressed() -> void:
 		0
 	)
 	# 切换到游戏场景，并传递初始数据
-	UIManager.scene_manager.switch_scene("game_scene", game_data.to_dict())
+	ui_scene_component.switch_scene("game_scene", game_data.to_dict())
+
+
+func _on_ui_scene_component_initialized(data: Dictionary) -> void:
+	_player_data = GameDataTypes.PlayerData.from_dict(data) as GameDataTypes.PlayerData
+	var home_button : Button = button_container.get_child(0)
+	home_button.button_pressed = true

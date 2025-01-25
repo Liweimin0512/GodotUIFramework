@@ -1,4 +1,4 @@
-[gd_scene load_steps=7 format=3 uid="uid://c56s2t71il4os"]
+[gd_scene load_steps=9 format=3 uid="uid://c56s2t71il4os"]
 
 [ext_resource type="Script" uid="uid://b5ujn1ntx2its" path="res://addons/GodotUIFramework/examples/core_demo/scenes/game_scene.gd" id="1_ua1ap"]
 [ext_resource type="Script" uid="uid://dod05jn2u0pey" path="res://addons/GodotUIFramework/source/core/components/ui_scene_component.gd" id="2_s1qkn"]
@@ -6,6 +6,18 @@
 [ext_resource type="PackedScene" uid="uid://bhn1g0j8mk134" path="res://addons/GodotUIFramework/examples/core_demo/widgets/game/character_status.tscn" id="4_t8t8m"]
 [ext_resource type="PackedScene" uid="uid://cmroh6ct6sgp7" path="res://addons/GodotUIFramework/examples/core_demo/widgets/game/battle_log_container.tscn" id="5_7osvk"]
 [ext_resource type="PackedScene" uid="uid://d34rmdtbdyjkj" path="res://addons/GodotUIFramework/examples/core_demo/widgets/game/skill_buttons.tscn" id="6_afy4p"]
+[ext_resource type="Script" uid="uid://ccoyeqfqodquq" path="res://addons/GodotUIFramework/source/core/resource/ui_widget_type.gd" id="7_wxvy2"]
+
+[sub_resource type="Resource" id="Resource_knaal"]
+script = ExtResource("7_wxvy2")
+reusable = false
+pool_capacity = 10
+auto_expand = true
+ID = &""
+scene_path = ""
+preload_mode = 0
+cache_mode = 0
+data_paths = Array[String](["battle_log"])
 
 [node name="GameScene" type="Control"]
 layout_mode = 3
@@ -48,6 +60,13 @@ offset_right = -10.0
 offset_bottom = -205.0
 grow_horizontal = 0
 grow_vertical = 0
+character_type = "enemy"
+
+[node name="HPBar" parent="EnemyStatus/MarginContainer/VBoxContainer" index="1"]
+character_type = "enemy"
+
+[node name="MPBar" parent="EnemyStatus/MarginContainer/VBoxContainer" index="2"]
+character_type = "enemy"
 
 [node name="BattleLogContainer" parent="." instance=ExtResource("5_7osvk")]
 unique_name_in_owner = true
@@ -61,4 +80,8 @@ layout_mode = 1
 
 [node name="UISceneComponent" type="Node" parent="."]
 script = ExtResource("2_s1qkn")
+config = SubResource("Resource_knaal")
 metadata/_custom_type_script = ExtResource("2_s1qkn")
+
+[editable path="PlayerStatus"]
+[editable path="EnemyStatus"]

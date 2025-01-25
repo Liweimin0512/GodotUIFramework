@@ -2,17 +2,16 @@
 
 [ext_resource type="Script" uid="uid://bwbu1v81hjd2n" path="res://addons/GodotUIFramework/examples/core_demo/main.gd" id="1_87en6"]
 [ext_resource type="Script" uid="uid://drldqlyqnyu6k" path="res://addons/GodotUIFramework/source/core/components/ui_group_component.gd" id="2_5dkav"]
-[ext_resource type="Script" uid="uid://cdtge4wnkvm45" path="res://addons/GodotUIFramework/source/core/resource/ui_scene_type.gd" id="2_brdht"]
+[ext_resource type="Script" uid="uid://cwol0omsjqlwy" path="res://addons/GodotUIFramework/source/core/resource/ui_view_type.gd" id="3_brdht"]
 [ext_resource type="Resource" uid="uid://bjg1kyv0xvj1" path="res://addons/GodotUIFramework/examples/core_demo/resource/ui_scenes/game_scene_type.tres" id="3_nnvp5"]
 [ext_resource type="Resource" uid="uid://08d7x6eatbac" path="res://addons/GodotUIFramework/examples/core_demo/resource/ui_scenes/lobby_scene_type.tres" id="4_t12mt"]
 [ext_resource type="Resource" uid="uid://bbw4ffmnsbxf0" path="res://addons/GodotUIFramework/examples/core_demo/resource/ui_scenes/login_scene_type.tres" id="5_n328a"]
 
 [node name="main" type="CanvasLayer"]
 script = ExtResource("1_87en6")
-_ui_scene_types = Array[ExtResource("2_brdht")]([ExtResource("3_nnvp5"), ExtResource("4_t12mt"), ExtResource("5_n328a")])
 
-[node name="UIGroupComponent" type="Node" parent="." node_paths=PackedStringArray("ui_root")]
+[node name="UIGroupComponent" type="Node" parent="."]
 script = ExtResource("2_5dkav")
 group_name = &"main"
-ui_root = NodePath("..")
+view_types = Array[ExtResource("3_brdht")]([ExtResource("3_nnvp5"), ExtResource("4_t12mt"), ExtResource("5_n328a")])
 metadata/_custom_type_script = ExtResource("2_5dkav")

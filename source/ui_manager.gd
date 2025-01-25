@@ -1,153 +1,183 @@
+@tool
 extends Node
 
 ## UI管理器
-## 负责管理UI的生命周期、状态转换和资源加载
-##
-## 使用示例：
-## ```gdscript
-## # 注册UI类型
-## UIManager.register_ui_type(main_menu_type)
-## # 显示UI
-## await UIManager.show_ui("main_menu")
-## # 隐藏UI
-## await UIManager.hide_ui("main_menu")
-## ```
+## 负责管理UI资源、视图和分组
 
-## UI状态枚举
-enum UIState { NONE, OPENING, OPENED, CLOSING, CLOSED }
+# 信号
+signal view_registered(view_type: UIViewType)
+signal view_unregistered(id: StringName)
+signal group_registered(name: StringName, group: UIGroupComponent)
+signal group_unregistered(name: StringName)
 
-## 资源管理器
-var resource_manager : UIResourceManager:
-	get:
-		return get_module("resource") as UIResourceManager
-	set(value):
-		push_error("resource_manager is read-only")
-## Widget管理器
-var widget_manager : UIWidgetManager:
-	get:
-		return get_module("widget") as UIWidgetManager
-	set(value):
-		push_error("widget_manager is read-only")
-## Scene管理器
-var scene_manager : UISceneManager:
-	get:
-		return get_module("scene") as UISceneManager
-	set(value):
-		push_error("scene_manager is read-only")
-## Theme管理器
-var theme_manager : UIThemeManager:
-	get:
-		return get_module("theme") as UIThemeManager
-	set(value):
-		push_error("theme_manager is read-only")
-## Transition管理器
-var transition_manager : UITransitionManager:
-	get:
-		return get_module("transition") as UITransitionManager
-	set(value):
-		push_error("transition_manager is read-only")
-## Adaptation管理器
-var adaptation_manager : UIAdaptationManager:
-	get:
-		return get_module("adaptation") as UIAdaptationManager
-	set(value):
-		push_error("adaptation_manager is read-only")
-## Localization管理器
-var localization_manager : UILocalizationManager:
-	get:
-		return get_module("localization") as UILocalizationManager
-	set(value):
-		push_error("localization_manager is read-only")
+# 内部变量
+var _view_types: Dictionary = {}
+var _groups: Dictionary = {}
+var _components: Dictionary = {}
+var _resource_manager: UIResourceManager
 
-## 模块类映射
-var _module_scripts : Dictionary[StringName, Script] = {
-	"resource": UIResourceManager,
-	"scene": UISceneManager,
-	"widget": UIWidgetManager,
-	"theme": UIThemeManager,
-	"transition": UITransitionManager,
-	"adaptation": UIAdaptationManager,
-	"localization": UILocalizationManager,
-}
-## 模块实例
-var _modules: Dictionary[StringName, RefCounted] = {}
-## 界面分组
-var _groups: Dictionary[String, UIGroupComponent] = {}
+## 初始化
+func _init() -> void:
+	process_mode = Node.PROCESS_MODE_ALWAYS
+	_resource_manager = UIResourceManager.new()
 
-## 设置分组
-func set_group(group_name: StringName, group: UIGroupComponent) -> void:
-	_groups[group_name] = group
+func _process(delta: float) -> void:
+	_resource_manager.process(delta)
 
-## 获取分组
-func get_group(group_name: StringName) -> UIGroupComponent:
-	assert(_groups.has(group_name), "不是有效的UI组")
-	return _groups[group_name]
+## 视图类型管理
+func register_view_type(view_type: UIViewType) -> void:
+	if _view_types.has(view_type.ID):
+		push_warning("View type already registered: %s" % view_type.ID)
+		return
+		
+	_view_types[view_type.ID] = view_type
+	view_registered.emit(view_type)
+	
+	# 处理预加载
+	if view_type.preload_mode == UIViewType.PRELOAD_MODE.PRELOAD:
+		_resource_manager.load_resource(view_type.scene_path, UIResourceManager.LoadMode.IMMEDIATE)
+	elif view_type.preload_mode == UIViewType.PRELOAD_MODE.LAZY_LOAD:
+		_resource_manager.load_resource(view_type.scene_path, UIResourceManager.LoadMode.LAZY)
 
-## 移除分组
-func remove_group(group_name: StringName) -> bool:
-	return _groups.erase(group_name)
+## 视图类型取消注册
+## [param view_type] 要取消注册的视图类型
+func unregister_view_type(view_type: UIViewType) -> void:
+	if not _view_types.has(view_type.ID):
+		push_warning("View type not registered: %s" % view_type.ID)
+		return
+		
+	_view_types.erase(view_type.ID)
+	view_unregistered.emit(view_type.ID)
 
-## 判断是否存在分组
-func has_group(group_name: StringName) -> bool:
-	return _groups.has(group_name)
+func get_view_type(id: StringName) -> UIViewType:
+	return _view_types.get(id)
 
-func get_scene_component(scene: Node) -> UISceneComponent:
-	return scene.get_node_or_null("UISceneComponent")
+## 创建场景
+func create_scene(id: StringName, data: Dictionary = {}) -> Control:
+	var scene_type := get_view_type(id) as UISceneType
+	if not scene_type:
+		push_error("Scene type not found: %s" % id)
+		return null
+	
+	var group := get_group(scene_type.group_id)
+	if not group:
+		push_error("Group not found: %s" % scene_type.group_id)
+		return null
+	
+	return group.create_scene(id, data)
 
-func get_widget_component(widget: Node) -> UIWidgetComponent:
-	return widget.get_node_or_null("UIWidgetComponent")
+## 分组管理
+## [param name] 分组名称
+## [param group] 分组组件
+func register_group(name: StringName, group: UIGroupComponent) -> void:
+	_groups[name] = group
+	group_registered.emit(name, group)
 
+## 分组取消注册
+## [param name] 分组名称
+func unregister_group(name: StringName) -> void:
+	if not _groups.has(name):
+		push_warning("Group not registered: %s" % name)
+		return
+	
+	_groups.erase(name)
+	group_unregistered.emit(name)
+
+## 分组获取
+## [param name] 分组名称
+func get_group(name: StringName) -> UIGroupComponent:
+	return _groups.get(name)
+
+## 组件管理
 func get_view_component(view: Node) -> UIViewComponent:
-	if is_widget(view):
-		return get_widget_component(view) as UIViewComponent
-	elif is_scene(view):
-		return get_scene_component(view) as UIViewComponent
-	push_error("can not found view component in node: {0}".format([view]))
+	if not view:
+		push_error("View node is null")
+		return null
+	
+	if _components.has(view):
+		if _components[view] is UIViewComponent:
+			return _components[view]
+	
+	for child in view.get_children():
+		if child is UIViewComponent:
+			_components[view] = child
+			return child
+	
+	push_error("View has no view component: %s" % view)
 	return null
 
-func get_group_component(group: Control) -> UIGroupComponent:
-	return group.get_node_or_null("UIGroupComponent")
+func get_widget_component(view: Node) -> UIWidgetComponent:
+	var component := get_view_component(view)
+	if  component is UIWidgetComponent:
+		return component
+	push_error("View is not a widget: %s" % view)	
+	return null
 
-func is_view(node : Node) -> bool:
-	return is_widget(node) or is_scene(node)
+func get_scene_component(view: Node) -> UISceneComponent:
+	var component := get_view_component(view)
+	if  component is UISceneComponent:
+		return component
+	push_error("View is not a scene: %s" % view)	
+	return null
 
-func is_widget(widget: Node) -> bool:
-	return widget.has_node("UIWidgetComponent")
+## 清理组件缓存
+## [param view] 视图节点
+func clear_component_cache(view: Node = null) -> void:
+	if view:
+		_components.erase(view)
+	else:
+		_components.clear()
 
-func is_group(group: Node) -> bool:
-	return group.has_node("UIGroupComponent")
-
-func is_scene(scene: Node) -> bool:
-	return scene.has_node("UISceneComponent")
-
-## 获取模块
-func get_module(module_id: String) -> RefCounted:
-	if not _modules.has(module_id):
-		if is_module_enabled(module_id):
-			_modules[module_id] = _create_module(module_id)
-		else:
-			push_error("模块未启用：" + module_id)
+## 创建视图实例
+## [param id] 视图ID
+## [param parent] 父节点
+## [param data] 初始化数据
+## [return] 创建的视图实例
+func create_view(id: StringName, parent: Node, data: Dictionary = {}) -> Control:
+	var view_type := get_view_type(id)
+	if not view_type:
+		push_error("View type not found: %s" % id)
+		return null
+	
+	# 加载场景资源
+	var scene_res := _resource_manager.get_cached_resource(view_type.scene_path)
+	if not scene_res:
+		# 如果缓存中没有，尝试立即加载
+		scene_res = _resource_manager.load_resource(view_type.scene_path, UIResourceManager.LoadMode.IMMEDIATE)
+		if not scene_res:
+			push_error("Failed to load scene: %s" % view_type.scene_path)
 			return null
-	return _modules[module_id]
-
-## 检查模块是否启用
-func is_module_enabled(module_id: String) -> bool:
-	var setting_name = "godot_ui_framework/modules/" + module_id + "/enabled"
-	# 如果设置不存在，默认为启用
-	if not ProjectSettings.has_setting(setting_name):
-		return true
-	return ProjectSettings.get_setting(setting_name, true)
-
-## 创建模块实例
-func _create_module(module_id: StringName) -> RefCounted:	
-	var script = _module_scripts[module_id]
-	if not script:
-		push_error("无法加载模块脚本：" + module_id)
+	
+	# 实例化场景
+	var instance = scene_res.instantiate()
+	if not instance is Control:
+		push_error("Scene instance is not a Control node: %s" % view_type.scene_path)
+		instance.free()
 		return null
 	
-	var module = script.new()
-	if not module:
-		push_error("无法创建模块实例：" + module_id)
-		return null
+	# 添加到父节点
+	parent.add_child(instance)
 	
-	return module
+	# 初始化视图组件
+	var component := get_view_component(instance)
+	if component:
+		component.config = view_type
+		component.initialize(data)
+	
+	return instance
+
+# 资源管理
+func load_resource(path: String, mode: UIResourceManager.LoadMode = UIResourceManager.LoadMode.IMMEDIATE) -> Resource:
+	return _resource_manager.load_resource(path, mode)
+
+func get_cached_resource(path: String) -> Resource:
+	return _resource_manager.get_cached_resource(path)
+
+func clear_resource_cache(path: String = "") -> void:
+	_resource_manager.clear_resource_cache(path)
+
+func get_from_pool(id: StringName) -> Node:
+	return _resource_manager.get_instance(id)
+
+func recycle_to_pool(id: StringName, instance: Node) -> void:
+	_resource_manager.recycle_instance(id, instance)

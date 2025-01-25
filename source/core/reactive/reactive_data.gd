@@ -11,7 +11,10 @@ func _init(initial_data: Dictionary = {}) -> void:
 	_data = initial_data.duplicate(true)
 
 ## 获取值
-func get_value(path: String) -> Variant:
+## [param path] 数据路径，为空则返回整个数据
+## [param default] 默认值
+## [return] 值
+func get_value(path: String, default: Variant = null) -> Variant:
 	if path.is_empty():
 		return _data
 	
@@ -22,11 +25,13 @@ func get_value(path: String) -> Variant:
 		if current is Dictionary and part in current:
 			current = current[part]
 		else:
-			return null
+			return default
 	
 	return current
 
 ## 设置值
+## [param path] 数据路径
+## [param value] 值
 func set_value(path: String, value: Variant) -> void:
 	if path.is_empty():
 		var old_data = _data.duplicate(true)
@@ -69,6 +74,8 @@ func set_value(path: String, value: Variant) -> void:
 		child_value_changed.emit(current_path, old_value, value)
 
 ## 更新多个值
+## [param values] 更新的值
+## [param base_path] 基础路径，为空则从根路径开始更新
 func update_values(values: Dictionary, base_path: String = "") -> void:
 	for key in values:
 		var path = key if base_path.is_empty() else base_path + "." + key
@@ -80,6 +87,8 @@ func update_values(values: Dictionary, base_path: String = "") -> void:
 			set_value(path, value)
 
 ## 监听值变化
+## [param path] 监听的数据路径
+## [param callback] 变化回调
 func watch(path: String, callback: Callable) -> void:
 	if not path in _watchers:
 		_watchers[path] = []
@@ -92,6 +101,8 @@ func watch(path: String, callback: Callable) -> void:
 		child_value_changed.connect(_on_child_value_changed)
 
 ## 取消监听
+## [param path] 监听的数据路径
+## [param callback] 变化回调
 func unwatch(path: String, callback: Callable) -> void:
 	if path in _watchers:
 		_watchers[path].erase(callback)
@@ -106,17 +117,24 @@ func unwatch(path: String, callback: Callable) -> void:
 			child_value_changed.disconnect(_on_child_value_changed)
 
 ## 值变化处理
+## [param path] 变化的数据路径
+## [param old_value] 旧值
+## [param new_value] 新值
 func _on_value_changed(path: String, old_value: Variant, new_value: Variant) -> void:
 	if path in _watchers:
 		for callback in _watchers[path]:
 			callback.call(old_value, new_value)
 
 ## 子值变化处理
+## [param path] 变化的数据路径
+## [param old_value] 旧值
+## [param new_value] 新值
 func _on_child_value_changed(path: String, old_value: Variant, new_value: Variant) -> void:
 	if path in _watchers:
 		for callback in _watchers[path]:
 			callback.call(old_value, new_value)
 
 ## 转换为字典
+## [return] 字典
 func to_dict() -> Dictionary:
 	return _data.duplicate(true)

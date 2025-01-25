@@ -5,6 +5,7 @@ extends MarginContainer
 ## 用于显示HP/MP等状态值的进度条
 
 const GameDataTypes = preload("res://addons/GodotUIFramework/examples/core_demo/data/game_data_types.gd")
+
 # 常量
 const STATUS_NAMES = {
 	"health": "生命值",
@@ -12,6 +13,9 @@ const STATUS_NAMES = {
 }
 
 # 导出变量
+@export_enum("player", "enemy") var character_type: String = "player":
+	set(value):
+		character_type = value
 ## 状态类型
 @export_enum("health", "mana") var status_type: String = "health":
 	set(value):
@@ -28,59 +32,60 @@ const STATUS_NAMES = {
 @onready var progress_bar: ProgressBar = %ProgressBar
 @onready var progress_label: Label = %ProgressLabel
 @onready var status_label: Label = %StatusLabel
+@onready var ui_widget_component: UIWidgetComponent = $UIWidgetComponent
 
-var _character_data : GameDataTypes.CharacterData
+var game_data : GameDataTypes.GameSceneData
 
 func _ready() -> void:
 	_update_appearance()
+	ui_widget_component.initialized.connect(_on_initialized)
+	ui_widget_component.data_updated.connect(_on_data_updated)
 
-func _setup(data: Dictionary = {}) -> void:
-	_character_data = GameDataTypes.CharacterData.from_dict(data)
+## 处理初始化
+func _on_initialized(data: Dictionary) -> void:
+	game_data = GameDataTypes.GameSceneData.from_dict(data)
 	_update_display()
 
-func _refresh(data: Dictionary = {}) -> void:
-	_character_data = GameDataTypes.CharacterData.from_dict(data)
+## 处理数据更新
+func _on_data_updated(path: String, value: Variant) -> void:
+	var data = ui_widget_component.get_data()
+	game_data = GameDataTypes.GameSceneData.from_dict(data)
 	_update_display()
 
 ## 更新外观
 func _update_appearance() -> void:
-	var style_box = StyleBoxFlat.new()
-	style_box.bg_color = progress_color
-	if progress_bar:
-		progress_bar.add_theme_stylebox_override("fill", style_box)
+	# 设置状态名称
 	if status_label:
-		status_label.text = STATUS_NAMES.get(status_type, "")
+		status_label.text = STATUS_NAMES.get(status_type, "未知状态")
+	
+	# 设置进度条颜色
+	if progress_bar:
+		var style_box = StyleBoxFlat.new()
+		style_box.bg_color = progress_color
+		progress_bar.add_theme_stylebox_override("fill", style_box)
 
 ## 更新显示
 func _update_display() -> void:
-	var current_value : int
-	var max_value : int
-	if status_type == "health":
-		current_value = _character_data.hp
-		max_value = _character_data.max_hp
-	elif status_type == "mana":
-		current_value = _character_data.mp
-		max_value = _character_data.max_mp
-
-	# 更新数值文本
-	if progress_label:
-		progress_label.text = "{0}/{1}".format([current_value, max_value])
+	if not is_inside_tree() or Engine.is_editor_hint():
+		return
 	
-	# 更新进度条
-	if progress_bar:
-		progress_bar.value = current_value
-		progress_bar.max_value = max_value
-
-		var ratio = float(current_value) / max_value if max_value > 0 else 0
-		var color = progress_color
-		
-		# 根据状态调整颜色
-		if status_type == "health":
-			# 生命值低于20%时闪烁红色警告
-			if ratio <= 0.2:
-				color = Color.RED if Time.get_ticks_msec() % 1000 < 500 else Color.DARK_RED
-			# 生命值低于50%时显示黄色警告
-			elif ratio <= 0.5:
-				color = Color.YELLOW
-		
-		progress_bar.modulate = color
+	var character_data : GameDataTypes.CharacterData
+	match character_type:
+		"player":
+			character_data = game_data.player
+		"enemy":
+			character_data = game_data.enemy
+	if not character_data:
+		push_error("can not found character data!")
+		return
+	
+	match status_type:
+		"health":
+			progress_bar.max_value = character_data.max_hp
+			progress_bar.value = character_data.hp
+			progress_label.text = "%d / %d" % [character_data.hp, character_data.max_hp]
+		"mana":
+			if character_type != "enemy":
+				progress_bar.max_value = character_data.max_mp
+				progress_bar.value = character_data.mp
+				progress_label.text = "%d / %d" % [character_data.mp, character_data.max_mp]

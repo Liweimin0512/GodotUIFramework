@@ -1,8 +1,20 @@
-[gd_scene load_steps=4 format=3 uid="uid://bhn1g0j8mk134"]
+[gd_scene load_steps=6 format=3 uid="uid://bhn1g0j8mk134"]
 
 [ext_resource type="Script" uid="uid://lfd3qtaymc0y" path="res://addons/GodotUIFramework/examples/core_demo/widgets/game/character_status.gd" id="1_6pjfs"]
 [ext_resource type="PackedScene" uid="uid://co631yynxaumm" path="res://addons/GodotUIFramework/examples/core_demo/widgets/game/status_progress_bar.tscn" id="1_mf70p"]
 [ext_resource type="Script" uid="uid://1mpayve22prh" path="res://addons/GodotUIFramework/source/core/components/ui_widget_component.gd" id="3_6kktp"]
+[ext_resource type="Script" uid="uid://ccoyeqfqodquq" path="res://addons/GodotUIFramework/source/core/resource/ui_widget_type.gd" id="4_6kktp"]
+
+[sub_resource type="Resource" id="Resource_2moyb"]
+script = ExtResource("4_6kktp")
+reusable = false
+pool_capacity = 10
+auto_expand = true
+ID = &""
+scene_path = ""
+preload_mode = 0
+cache_mode = 0
+data_paths = Array[String]([])
 
 [node name="CharacterStatus" type="MarginContainer"]
 offset_right = 40.0
@@ -41,14 +53,16 @@ text = "Lv.99"
 [node name="HPBar" parent="MarginContainer/VBoxContainer" instance=ExtResource("1_mf70p")]
 unique_name_in_owner = true
 layout_mode = 2
+character_type = "player"
+status_type = "health"
 
 [node name="MPBar" parent="MarginContainer/VBoxContainer" instance=ExtResource("1_mf70p")]
 unique_name_in_owner = true
 layout_mode = 2
-status_type = "mana"
+character_type = "player"
 progress_color = Color(0.0392157, 0.0705882, 1, 1)
 
 [node name="UIWidgetComponent" type="Node" parent="."]
 script = ExtResource("3_6kktp")
-data_paths = Array[String](["character.info"])
+config = SubResource("Resource_2moyb")
 metadata/_custom_type_script = ExtResource("3_6kktp")

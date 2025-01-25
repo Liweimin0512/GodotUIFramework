@@ -1,46 +1,62 @@
-extends UIViewType
+@tool
+extends UIWidgetType
 class_name UISceneType
 
-## UI场景配置资源
-## 用于配置UI场景的基本属性和行为
+## UI场景类型
+## 继承自UIWidgetType，添加场景特有的功能
 
-## 场景分组ID，用于管理同组场景的显示和隐藏
-@export var group_id: StringName = "":
-	set(value):
-		group_id = value
-	get:
-		return group_id
+## 分组行为
+enum GROUP_BEHAVIOR {
+	RESPECT_SCENE,     # 尊重场景配置的分组
+	FORCE_GROUP,       # 强制使用当前分组
+	ADDITIVE_GROUP     # 添加到当前分组（保留原有分组）
+}
 
-## 是否在显示时隐藏同组其他场景
-@export var hide_others: bool = true:
-	set(value):
-		hide_others = value
-	get:
-		return hide_others
+## 分组类型
+enum GROUP_TYPE {
+	EXCLUSIVE,     # 互斥组（同时只能显示一个场景）
+	ADDITIVE,      # 叠加组（可以同时显示多个场景）
+	INDEPENDENT    # 独立组（不影响其他组的场景）
+}
 
-## 是否为模态场景（显示遮罩）
-@export var is_modal: bool = false:
-	set(value):
-		is_modal = value
-	get:
-		return is_modal
+# 属性
+## 分组ID
+@export var group_id: StringName
+## 分组行为
+@export var group_behavior: GROUP_BEHAVIOR = GROUP_BEHAVIOR.RESPECT_SCENE
+## 分组类型
+@export var group_type: GROUP_TYPE = GROUP_TYPE.EXCLUSIVE
+## 层级
+@export var layer: int = 0
+## 过渡动画名称
+@export var transition_name: StringName
+## 是否隐藏其他场景
+@export var hide_others: bool = false
+## 是否模态
+@export var modal: bool = false
 
-## 是否阻挡输入事件（模态场景遮罩是否可点击）
-@export var block_input: bool = true:
-	set(value):
-		block_input = value
-	get:
-		return block_input
-
-## 验证配置是否有效
+## 验证配置
 func validate() -> bool:
-	# 基类验证
-	if not super():
+	if not super.validate():
 		return false
 	
-	# 验证group_id（如果设置了的话）
-	if not group_id.is_empty() and not group_id.is_valid_identifier():
-		push_error("Invalid group_id: %s" % group_id)
+	# 场景类型默认不使用对象池
+	reusable = false
+	
+	if modal and group_type != GROUP_TYPE.EXCLUSIVE:
+		push_error("Modal scenes must be exclusive")
 		return false
 	
 	return true
+
+## 复制配置
+func duplicate_type() -> UISceneType:
+	var copy = super.duplicate_type() as UISceneType
+	copy.group_id = group_id
+	copy.group_behavior = group_behavior
+	copy.group_type = group_type
+	copy.layer = layer
+	copy.transition_name = transition_name
+	copy.hide_others = hide_others
+	copy.modal = modal
+	return copy

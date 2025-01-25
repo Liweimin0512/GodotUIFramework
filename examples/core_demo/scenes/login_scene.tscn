@@ -1,18 +1,32 @@
-[gd_scene load_steps=5 format=3 uid="uid://dvj00xb8l1imo"]
+[gd_scene load_steps=7 format=3 uid="uid://dvj00xb8l1imo"]
 
 [ext_resource type="Script" uid="uid://cbpdbjqbinepa" path="res://addons/GodotUIFramework/examples/core_demo/scenes/login_scene.gd" id="1_xtffd"]
 [ext_resource type="Script" uid="uid://dod05jn2u0pey" path="res://addons/GodotUIFramework/source/core/components/ui_scene_component.gd" id="2_m6s8v"]
 [ext_resource type="Script" uid="uid://ccoyeqfqodquq" path="res://addons/GodotUIFramework/source/core/resource/ui_widget_type.gd" id="2_xa8fl"]
+[ext_resource type="Script" uid="uid://cwol0omsjqlwy" path="res://addons/GodotUIFramework/source/core/resource/ui_view_type.gd" id="4_vtpjn"]
 
 [sub_resource type="Resource" id="Resource_vtpjn"]
 script = ExtResource("2_xa8fl")
 reusable = true
-auto_recycle = true
+pool_capacity = 10
+auto_expand = true
 ID = &"loading"
 scene_path = "uid://d22ibeg51jttt"
 preload_mode = 0
 cache_mode = 0
-layer = 0
+data_paths = Array[String]([])
+metadata/_custom_type_script = ExtResource("2_xa8fl")
+
+[sub_resource type="Resource" id="Resource_xpa10"]
+script = ExtResource("2_xa8fl")
+reusable = false
+pool_capacity = 10
+auto_expand = true
+ID = &"loading"
+scene_path = "uid://d22ibeg51jttt"
+preload_mode = 1
+cache_mode = 0
+data_paths = Array[String]([])
 metadata/_custom_type_script = ExtResource("2_xa8fl")
 
 [node name="LoginScene" type="Control"]
@@ -115,6 +129,7 @@ text = "密码不正确！"
 
 [node name="UISceneComponent" type="Node" parent="."]
 script = ExtResource("2_m6s8v")
+view_types = Array[ExtResource("4_vtpjn")]([SubResource("Resource_xpa10")])
 metadata/_custom_type_script = ExtResource("2_m6s8v")
 
 [connection signal="pressed" from="MarginContainer/VBoxContainer/MarginContainer3/HBoxContainer/ButtonRegister" to="." method="_on_button_register_pressed"]

@@ -65,3 +65,6 @@ vertical_alignment = 1
 [node name="UIWidgetComponent" type="Node" parent="."]
 script = ExtResource("2_m788q")
 metadata/_custom_type_script = ExtResource("2_m788q")
+
+[connection signal="initialized" from="UIWidgetComponent" to="." method="_on_ui_widget_component_initialized"]
+[connection signal="widget_recycled" from="UIWidgetComponent" to="." method="_on_ui_widget_component_widget_recycled"]

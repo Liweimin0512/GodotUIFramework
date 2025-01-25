@@ -1,8 +1,20 @@
-[gd_scene load_steps=4 format=3 uid="uid://jcj6be72bli4"]
+[gd_scene load_steps=6 format=3 uid="uid://jcj6be72bli4"]
 
 [ext_resource type="Script" uid="uid://e77sjdta4wym" path="res://addons/GodotUIFramework/examples/core_demo/widgets/labby/player_info.gd" id="1_1w8cm"]
 [ext_resource type="Texture2D" uid="uid://beq1qw4n23ku8" path="res://icon.svg" id="1_xu7q1"]
 [ext_resource type="Script" uid="uid://1mpayve22prh" path="res://addons/GodotUIFramework/source/core/components/ui_widget_component.gd" id="3_mwgpp"]
+[ext_resource type="Script" uid="uid://ccoyeqfqodquq" path="res://addons/GodotUIFramework/source/core/resource/ui_widget_type.gd" id="4_mwgpp"]
+
+[sub_resource type="Resource" id="Resource_c8ips"]
+script = ExtResource("4_mwgpp")
+reusable = false
+pool_capacity = 10
+auto_expand = true
+ID = &""
+scene_path = ""
+preload_mode = 0
+cache_mode = 0
+data_paths = Array[String]([])
 
 [node name="PlayerInfo" type="MarginContainer"]
 script = ExtResource("1_1w8cm")
@@ -32,6 +44,8 @@ text = "Lv. 99"
 
 [node name="UIWidgetComponent" type="Node" parent="."]
 script = ExtResource("3_mwgpp")
+config = SubResource("Resource_c8ips")
 metadata/_custom_type_script = ExtResource("3_mwgpp")
 
 [connection signal="gui_input" from="." to="." method="_on_gui_input"]
+[connection signal="initialized" from="UIWidgetComponent" to="." method="_on_ui_widget_component_initialized"]

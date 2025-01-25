@@ -1,4 +1,4 @@
-[gd_scene load_steps=10 format=3 uid="uid://cdg0qo6phgolk"]
+[gd_scene load_steps=12 format=3 uid="uid://cdg0qo6phgolk"]
 
 [ext_resource type="Script" uid="uid://ltwauhtm8irk" path="res://addons/GodotUIFramework/examples/core_demo/scenes/lobby_scene.gd" id="1_3vguu"]
 [ext_resource type="Script" uid="uid://dod05jn2u0pey" path="res://addons/GodotUIFramework/source/core/components/ui_scene_component.gd" id="2_garjm"]
@@ -8,8 +8,27 @@
 [ext_resource type="Script" uid="uid://drldqlyqnyu6k" path="res://addons/GodotUIFramework/source/core/components/ui_group_component.gd" id="3_ka48l"]
 [ext_resource type="Resource" uid="uid://cymdqfbft0kdm" path="res://addons/GodotUIFramework/examples/core_demo/resource/ui_scenes/lobby_scene/shop_panel.tres" id="4_y2utg"]
 [ext_resource type="Resource" uid="uid://b3j7bhfsmlr8g" path="res://addons/GodotUIFramework/examples/core_demo/resource/ui_scenes/lobby_scene/social_panel.tres" id="5_4dfhe"]
+[ext_resource type="Script" uid="uid://cwol0omsjqlwy" path="res://addons/GodotUIFramework/source/core/resource/ui_view_type.gd" id="5_wr5le"]
 
 [sub_resource type="ButtonGroup" id="ButtonGroup_wr5le"]
+
+[sub_resource type="Resource" id="Resource_016x6"]
+script = ExtResource("2_wr5le")
+group_id = &""
+group_behavior = 0
+group_type = 0
+layer = 0
+transition_name = &""
+hide_others = false
+modal = false
+reusable = false
+pool_capacity = 10
+auto_expand = true
+ID = &""
+scene_path = ""
+preload_mode = 0
+cache_mode = 0
+data_paths = Array[String]([])
 
 [node name="LobbyScene" type="Control"]
 layout_mode = 3
@@ -19,7 +38,6 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_3vguu")
-_scene_types = Array[ExtResource("2_wr5le")]([ExtResource("3_016x6"), ExtResource("4_y2utg"), ExtResource("5_4dfhe")])
 
 [node name="VBoxContainer" type="VBoxContainer" parent="."]
 layout_mode = 1
@@ -56,10 +74,10 @@ theme_override_constants/margin_top = 10
 theme_override_constants/margin_right = 30
 theme_override_constants/margin_bottom = 10
 
-[node name="UIGroupComponent" type="Node" parent="VBoxContainer/MainArea" node_paths=PackedStringArray("ui_root")]
+[node name="UIGroupComponent" type="Node" parent="VBoxContainer/MainArea"]
+unique_name_in_owner = true
 script = ExtResource("3_ka48l")
 group_name = &"lobby"
-ui_root = NodePath("..")
 metadata/_custom_type_script = ExtResource("3_ka48l")
 
 [node name="BottomBar" type="MarginContainer" parent="VBoxContainer"]
@@ -107,7 +125,10 @@ text = "StartGame
 
 [node name="UISceneComponent" type="Node" parent="."]
 script = ExtResource("2_garjm")
+view_types = Array[ExtResource("5_wr5le")]([ExtResource("3_016x6"), ExtResource("4_y2utg"), ExtResource("5_4dfhe")])
+config = SubResource("Resource_016x6")
 metadata/_custom_type_script = ExtResource("2_garjm")
 
 [connection signal="pressed" from="VBoxContainer/TopBar/HBoxContainer/PlayerInfo" to="." method="_on_player_info_pressed"]
 [connection signal="pressed" from="VBoxContainer/BottomBar/HBoxContainer/ButtonStartGame" to="." method="_on_button_start_game_pressed"]
+[connection signal="initialized" from="UISceneComponent" to="." method="_on_ui_scene_component_initialized"]

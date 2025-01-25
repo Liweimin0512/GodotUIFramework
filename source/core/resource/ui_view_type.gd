@@ -1,33 +1,56 @@
+@tool
 extends Resource
 class_name UIViewType
 
-## UI控件数据模型，根据这个模型实例化控件对应的UI场景
+## UI视图类型基类
+## 提供基础的UI资源类型功能
 
-## 加载策略
-enum PRELOAD_MODE {
-	ON_DEMAND,     ## 按需加载
-	PRELOAD,       ## 预加载
-	LAZY_LOAD      ## 懒加载
-}
+## 预加载模式
+enum PRELOAD_MODE { 
+	NONE, 				## 不预加载
+	PRELOAD, 			## 预加载
+	LAZY_LOAD 			## 延迟加载
+	}
+## 缓存模式
+enum CACHE_MODE { 
+	NONE, 				## 不缓存
+	CACHE_IN_MEMORY,    ## 在内存中缓存
+	}
 
-## 缓存策略
-enum CACHE_MODE {
-	DESTROY_ON_CLOSE,    ## 关闭时销毁
-	CACHE_IN_MEMORY,     ## 内存中缓存
-	SMART_CACHE          ## 智能缓存
-}
-
-## 基本属性
-@export var ID: StringName = ""
+# 属性
+## 视图ID
+@export var ID: StringName
+## 场景路径
 @export_file("*.tscn") var scene_path: String
-@export var preload_mode: PRELOAD_MODE = PRELOAD_MODE.ON_DEMAND
-@export var cache_mode: CACHE_MODE = CACHE_MODE.DESTROY_ON_CLOSE
+## 预加载模式
+@export var preload_mode: PRELOAD_MODE = PRELOAD_MODE.NONE
+## 缓存模式
+@export var cache_mode: CACHE_MODE = CACHE_MODE.NONE
+## 数据绑定路径
+@export var data_paths: Array[String]
 
-## 层级
-@export var layer: int = 0
-## 过渡动画
-@export var transition: UITransition
-
-## 验证配置是否有效
+## 验证配置
 func validate() -> bool:
+	if ID.is_empty():
+		push_error("View ID cannot be empty")
+		return false
+	
+	if scene_path.is_empty():
+		push_error("Scene path cannot be empty")
+		return false
+	
+	if not FileAccess.file_exists(scene_path):
+		push_error("Scene file not found: %s" % scene_path)
+		return false
+	
 	return true
+
+## 复制配置
+func duplicate_type() -> UIViewType:
+	var copy = super.duplicate()
+	copy.ID = ID
+	copy.scene_path = scene_path
+	copy.preload_mode = preload_mode
+	copy.cache_mode = cache_mode
+	copy.data_paths = data_paths.duplicate()
+	return copy

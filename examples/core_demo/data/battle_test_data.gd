@@ -17,15 +17,19 @@ const PLAYER_DATA_TEMPLATES := {
 				"id": "attack",
 				"name": "攻击",
 				"damage": 15,
+				"heal": 0,
 				"mp_cost": 0,
-				"description": "基础攻击"
+				"description": "基础攻击",
+				"icon_path": "res://icon.svg"
 			},
 			{
 				"id": "heal",
 				"name": "治疗",
+				"damage": 0,
 				"heal": 20,
 				"mp_cost": 10,
-				"description": "恢复生命值"
+				"description": "恢复生命值",
+				"icon_path": "res://icon.svg"
 			}
 		]
 	},
@@ -42,22 +46,28 @@ const PLAYER_DATA_TEMPLATES := {
 				"id": "attack",
 				"name": "强化攻击",
 				"damage": 20,
+				"heal": 0,
 				"mp_cost": 0,
-				"description": "增强的基础攻击"
+				"description": "增强的基础攻击",
+				"icon_path": "res://icon.svg"
 			},
 			{
 				"id": "heal",
 				"name": "强效治疗",
+				"damage": 0,
 				"heal": 30,
 				"mp_cost": 15,
-				"description": "强力的治疗魔法"
+				"description": "更强的治疗效果",
+				"icon_path": "res://icon.svg"
 			},
 			{
-				"id": "fire_ball",
+				"id": "fire",
 				"name": "火球术",
-				"damage": 25,
-				"mp_cost": 15,
-				"description": "造成火焰伤害"
+				"damage": 35,
+				"heal": 0,
+				"mp_cost": 25,
+				"description": "造成火焰伤害",
+				"icon_path": "res://icon.svg"
 			}
 		]
 	}

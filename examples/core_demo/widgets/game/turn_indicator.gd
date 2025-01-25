@@ -5,6 +5,7 @@ extends MarginContainer
 
 # 节点引用
 @onready var label: Label = %Label
+@onready var ui_widget_component: UIWidgetComponent = $UIWidgetComponent
 
 # 状态文本映射
 const STATE_TEXT = {
@@ -16,52 +17,24 @@ const STATE_TEXT = {
 }
 
 func _ready() -> void:
-	# 初始显示
-	_update_display(1, 0)
+	ui_widget_component.initialized.connect(_on_initialized)
+	ui_widget_component.data_updated.connect(_on_data_updated)
 
-func _setup(data: Dictionary) -> void:
+## 处理初始化
+func _on_initialized(data: Dictionary) -> void:
 	var turn_count = data.get("turn_count", 1)
 	var state = data.get("state", 0)
-	
 	_update_display(turn_count, state)
+
+## 处理数据更新
+func _on_data_updated(path: String, value: Variant) -> void:
+	match path:
+		"turn_count":
+			_update_display(value, ui_widget_component.get_data("state", 0))
+		"state":
+			_update_display(ui_widget_component.get_data("turn_count", 1), value)
 
 ## 刷新显示
-func _refresh(data: Dictionary) -> void:
-	# 获取回合数和状态
-	var turn_count = data.get("turn_count", 1)
-	var state = data.get("state", 0)
-	
-	_update_display(turn_count, state)
-
-## 更新显示
 func _update_display(turn_count: int, state: int) -> void:
-	if not is_inside_tree(): return
-	if not label: return
-	
-	# 获取状态文本
 	var state_text = STATE_TEXT.get(state, "未知状态")
-	
-	# 更新显示
-	if state == 0:  # INIT
-		label.text = state_text
-	else:
-		label.text = "第%d回合\n%s" % [turn_count, state_text]
-
-	# 根据状态设置颜色
-	_update_state_color(state)    
-
-## 根据状态设置颜色
-func _update_state_color(state: int) -> void:
-	match state:
-		0:  # INIT
-			modulate = Color.WHITE
-		1:  # PLAYER_TURN
-			modulate = Color.GREEN
-		2:  # ENEMY_TURN
-			modulate = Color.RED
-		3:  # WIN
-			modulate = Color.YELLOW
-		4:  # LOSE
-			modulate = Color.GRAY
-		_:
-			modulate = Color.WHITE
+	label.text = "第 %d 回合 - %s" % [turn_count, state_text]

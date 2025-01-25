@@ -1,103 +1,124 @@
-extends UIViewComponent
+@tool
+extends UIWidgetComponent
 class_name UISceneComponent
 
-## UI场景组件，负责管理UI场景的生命周期和行为
-## 通过UISceneType配置来初始化场景属性
+## UI场景组件
+## 提供场景特有功能，如场景管理和分组行为
 
-## 场景打开信号
-signal scene_opened(scene: Control)
-## 场景关闭信号
-signal scene_closed(scene: Control)
+# 内部变量
+var _group: UIGroupComponent:
+	get:
+		if not _group:
+			push_warning("No UIGroupComponent found", self)
+			_group = _find_group_component()
+		return _group
 
-## 模态遮罩节点
-var _modal_blocker: ColorRect
+func _init() -> void:
+	config = UISceneType.new()
 
-func _ready() -> void:
-	# 确保有配置
-	if not config:
-		config = UISceneType.new()
+## 查找分组组件
+func _find_group_component() -> UIGroupComponent:
+	var node = get_parent()
+	for child in node.get_children():
+		if child is UIGroupComponent:
+			return child
+	push_error("No UIGroupComponent found by id : {0}".format([name]))
+	return null
+
+## 创建场景
+## [param id] 场景ID
+## [param data] 场景数据
+## [return] 创建的场景实例
+func create_scene(id: StringName, data: Dictionary = {}) -> Control:
+	if id.is_empty():
+		push_error("Scene ID cannot be empty")
+		return null
 	
-	# 如果是模态场景，设置遮罩
-	if (config as UISceneType).is_modal:
-		_setup_modal_blocker()
-
-## 初始化场景
-## [param data] 初始化数据
-func initialize(data: Dictionary = {}) -> void:
-	if not config:
-		config = UISceneType.new()
+	var scene_type := UIManager.get_view_type(id) as UISceneType
+	if not scene_type:
+		push_error("Scene type not found: %s" % id)
+		return null
 	
-	if (config as UISceneType).is_modal:
-		_setup_modal_blocker()
-	
-	await super.initialize(data)
-	scene_opened.emit(owner)
-
-## 销毁场景
-func dispose() -> void:
-	await super()
-	
-	# 清理遮罩
-	if _modal_blocker:
-		_modal_blocker.queue_free()
-		_modal_blocker = null
-	
-	# 发送场景关闭信号
-	scene_closed.emit(owner)
-
-## 设置是否阻挡输入
-func set_block_input(value: bool) -> void:
-	if not config or not (config is UISceneType):
-		return
+	# 根据分组行为处理场景创建
+	match scene_type.group_behavior:
+		UISceneType.GROUP_BEHAVIOR.FORCE_GROUP:
+			if not _group:
+				push_error("No UIGroupComponent found for FORCE_GROUP behavior")
+				return null
+			return _group.create_scene(id, data)
 		
-	(config as UISceneType).block_input = value
-	_update_modal_blocker()
-
-## 设置是否为模态场景
-func set_modal(value: bool) -> void:
-	if not config or not (config is UISceneType):
-		return
+		UISceneType.GROUP_BEHAVIOR.ADDITIVE_GROUP:
+			var scene = UIManager.create_view(id, null, data)
+			if scene and _group:
+				_group.add_scene(scene)
+			return scene
 		
-	(config as UISceneType).is_modal = value
-	_update_modal_blocker()
+		_: # RESPECT_SCENE
+			if not _group:
+				push_error("No UIGroupComponent found")
+				return null
+			return _group.create_scene(id, data)
 
-## 应用配置
-func _apply_config() -> void:
-	super()
-	if not config or not (config is UISceneType):
+## 关闭场景
+## [param scene] 要关闭的场景，为空则关闭当前场景
+func close_scene(scene: Control = null) -> void:
+	if not _group:
+		push_error("No UIGroupComponent found")
 		return
 	
-	_update_modal_blocker()
+	if scene:
+		_group.close_scene(scene)
+	else:
+		var current = _group.get_current_scene()
+		if current:
+			_group.close_scene(current)
 
-## 设置模态遮罩
-func _setup_modal_blocker() -> void:
-	if _modal_blocker:
-		return
+## 关闭当前场景
+func close() -> void:
+	recycle()
+
+## 切换场景
+## [param id] 场景ID
+## [param data] 场景数据
+## [return] 创建的场景实例
+func switch_scene(id: StringName, data: Dictionary = {}) -> Control:
+	var scene_type := UIManager.get_view_type(id) as UISceneType
+	if not scene_type:
+		push_error("Scene type not found: %s" % id)
+		return null
+	
+	if not _group:
+		push_error("cant switch scene: {0}, No UIGroupComponent found by {1}!".format([id, scene_type.group_id]))
+		return null
+	
+	# 根据场景类型处理切换
+	match scene_type.group_type:
+		UISceneType.GROUP_TYPE.EXCLUSIVE:
+			return _group.switch_scene(id, data)
 		
-	_modal_blocker = ColorRect.new()
-	_modal_blocker.name = "ModalBlocker"
-	_modal_blocker.color = Color(0, 0, 0, 0.5)
-	_modal_blocker.set_anchors_preset(Control.PRESET_FULL_RECT)
-	
-	owner.add_child(_modal_blocker)
-	_update_modal_blocker()
-	
-	# 确保遮罩和场景在最前
-	_modal_blocker.move_to_front()
-	owner.move_to_front()
-
-## 更新模态遮罩状态
-func _update_modal_blocker() -> void:
-	if not config or not (config is UISceneType):
-		return
+		UISceneType.GROUP_TYPE.ADDITIVE:
+			var scene = create_scene(id, data)
+			if scene and scene_type.hide_others:
+				_group.hide_other_scenes(scene)
+			return scene
 		
-	var scene_config := config as UISceneType
-	
-	if not _modal_blocker:
-		if scene_config.is_modal:
-			_setup_modal_blocker()
+		UISceneType.GROUP_TYPE.INDEPENDENT:
+			return create_scene(id, data)
+		
+		_:
+			return _group.switch_scene(id, data)
+
+## 获取当前场景
+## [return] 当前场景实例
+func get_current_scene() -> Control:
+	if not _group:
+		push_error("No UIGroupComponent found")
+		return null
+	return _group.get_current_scene()
+
+## 关闭所有场景
+func close_all_scenes() -> void:
+	if not _group:
+		push_error("No UIGroupComponent found")
 		return
-	
-	# 更新遮罩状态
-	_modal_blocker.visible = scene_config.is_modal
-	_modal_blocker.mouse_filter = Control.MOUSE_FILTER_STOP if scene_config.block_input else Control.MOUSE_FILTER_IGNORE
+	_group.close_all_scenes()

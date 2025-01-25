@@ -1,275 +1,268 @@
 extends Node
 class_name UIViewComponent
 
-## UI视图基础组件
-## 所有UI组件的基类，提供基本的生命周期和数据管理
+## UI视图组件基类
+## 提供基础的UI组件功能，包括生命周期管理和数据绑定
 
-## 视图数据模型
-var model: ReactiveData:
-	set = set_model
+# 信号
+## 初始化完成，返回初始数据
+signal initialized(data: Dictionary)
+## 即将销毁，返回最终数据
+signal disposing(data: Dictionary)
+## 数据更新前
+signal data_updating(path: String, value: Variant)
+## 数据更新后
+signal data_updated(path: String, value: Variant)
 
-## 层级
-@export var layer: int = 0
-## 过渡动画
-@export var transition_name: StringName = ""
-## 数据路径数组，支持逻辑表达式
-@export var data_paths: Array[String] = []
-## 路径解析器
-var _path_parser: DataPathParser
-## 当前状态
-var _is_initialized: bool = false
-
+## 初始化时注册的视图类型数据
+@export var view_types : Array[UIViewType] = []
 ## 视图配置
-var config: UIViewType:
+@export var config : UIViewType:
 	set(value):
-		if config == value:
-			return
-		var old_config = config
 		config = value
-		_apply_config()
-		config_changed.emit(old_config, value)
-	get:
-		return config
+		if Engine.is_editor_hint():
+			return
+		if _is_initialized:
+			push_warning("Cannot change config after initialization")
+			return
+		_config = value
 
-## 缓存的子视图组件
-var _cached_child_components: Array[UIViewComponent] = []
-## 是否需要刷新子视图缓存
-var _need_refresh_cache: bool = true
+# 属性
+var model: ReactiveData:
+	set(value):
+		if model != null and model.value_changed.is_connected(_on_data_changed):
+			model.value_changed.disconnect(_on_data_changed)
+		model = value
+		if model != null:
+			model.value_changed.connect(_on_data_changed)
 
-## 视图准备好
-signal view_ready(view: Control)
-## 视图被销毁
-signal view_disposed(view: Control)
-## 过渡动画开始
-signal transition_started(view: Control)
-## 过渡动画结束
-signal transition_completed(view: Control)
-## 配置变更信号
-signal config_changed(old_config: UIViewType, new_config: UIViewType)
-## 数据更新信号
-signal data_updated(data: Dictionary)
-
-func _init() -> void:
-	_path_parser = DataPathParser.new()
+# 内部变量
+var _is_initialized: bool = false          # 是否已初始化
+var _view_components: Array[UIViewComponent] = []  # 视图组件列表
+var _config: UIViewType                    # 内部配置引用
 
 func _ready() -> void:
-	# 监听子节点变化
-	owner.child_entered_tree.connect(_on_child_changed)
-	owner.child_exiting_tree.connect(_on_child_changed)
-
-## 子节点变化时刷新缓存
-func _on_child_changed(_node: Node) -> void:
-	_need_refresh_cache = true
-
-## 刷新子视图缓存
-func _refresh_child_components() -> void:
-	if not _need_refresh_cache:
-		return
+	# 注册视图类型
+	for view_type in view_types:
+		UIManager.register_view_type(view_type)
 	
-	_cached_child_components.clear()
-	_find_child_components_recursive(owner)
-	_need_refresh_cache = false
+	if not Engine.is_editor_hint():
+		# 设置初始配置
+		_config = config
+	
+func _exit_tree() -> void:
+	for view_type in view_types:
+		UIManager.unregister_view_type(view_type)
 
-## 递归查找子视图组件
-func _find_child_components_recursive(node: Node) -> void:
-	for child in node.get_children():
-		# 如果当前节点是视图，获取其组件并添加到缓存
-		if UIManager.is_view(child):
-			var component = UIManager.get_view_component(child)
-			if component and component != self:  # 避免自己引用自己
-				_cached_child_components.append(component)
-			continue  # 如果是视图节点，不再继续遍历其子节点，因为那是另一个视图的职责范围
-		
-		# 如果不是视图节点，继续递归查找
-		_find_child_components_recursive(child)
-
-## 初始化视图
+## 初始化
+## [param data] 初始化数据
 func initialize(data: Dictionary = {}) -> void:
 	if _is_initialized:
+		push_error("View already initialized")
 		return
-		
-	model = ReactiveData.new()
-	model.update_values(data)
-	if owner.has_method("_setup"):
-		owner.call("_setup", model.to_dict())
+
+	# 设置数据模型
+	model = ReactiveData.new(data)
 	
-	# 初始化所有子视图
-	_initialize_child_views(data)
+	# 调用子类初始化
+	_initialized(data)
 	
-	# 播放过渡动画
-	await _play_transition()
+	# 初始化视图组件
+	_initialize_view_components(data)
+	
+	# 监听节点树变化
+	owner.child_entered_tree.connect(_on_node_added)
+	owner.child_exiting_tree.connect(_on_node_removed)
 	
 	_is_initialized = true
-	view_ready.emit(owner)
+	initialized.emit(data)
 
-## 更新视图数据
-func update_data(data: Dictionary) -> void:
-	# 合并数据
-	model.update_values(data)
-	
-	# 发送更新信号
-	data_updated.emit(model.to_dict())
-	
-	# 更新所有子视图
-	_update_child_views(data)
-
-## 销毁视图
+## 销毁
 func dispose() -> void:
 	if not _is_initialized:
 		return
 	
-	# 播放退出动画
-	await _play_transition(false)
+	var final_data := get_data()
+	disposing.emit(final_data)
 	
-	# 销毁所有子视图
-	_dispose_child_views()
+	# 断开节点树变化的信号连接
+	if owner:
+		if owner.child_entered_tree.is_connected(_on_node_added):
+			owner.child_entered_tree.disconnect(_on_node_added)
+		if owner.child_exiting_tree.is_connected(_on_node_removed):
+			owner.child_exiting_tree.disconnect(_on_node_removed)
 	
-	if owner.has_method("_cleanup"):
-		owner.call("_cleanup")
+	# 销毁视图组件
+	_dispose_view_components()
+	
+	# 调用子类销毁
+	_disposed()
+	
+	# 清理数据模型
+	model = null
 	
 	_is_initialized = false
-	view_disposed.emit(owner)
 
-## 获取视图数据
-func get_data() -> Dictionary:
-	return model.to_dict()
+## 更新数据
+## [param data] 更新的数据
+## [param paths] 更新路径列表，为空则使用配置中的路径
+func update_data(data: Dictionary, paths: Array[String] = []) -> void:
+	if not model:
+		push_error("Cannot update data: model is null")
+		return
+	
+	if not data is Dictionary:
+		push_error("Update data must be a Dictionary")
+		return
+	
+	var _update_paths := config.data_paths
+	# 更新路径列表
+	var update_paths := paths if not paths.is_empty() else _update_paths
+	
+	# 如果没有指定路径，更新整个数据
+	if update_paths.is_empty():
+		data_updating.emit("", data)
+		model.set_value("", data)
+		return
+	
+	# 更新指定路径的数据
+	for path in update_paths:
+		if path in data:
+			data_updating.emit(path, data[path])
+			model.set_value(path, data[path])
 
-## 获取层级
-func get_layer() -> int:
-	return layer
+## 获取数据
+## [param path] 数据路径，为空则返回整个数据
+## [param default] 默认值
+func get_data(path: String = "", default: Variant = null) -> Variant:
+	if not model:
+		push_error("Cannot get data: model is null")
+		return null
+	
+	return model.get_value(path, default)
 
-## 设置层级
-func set_layer(value: int) -> void:
-	layer = value
+## 注册视图类型
+## [param view_type] 视图类型
+func register_view_type(view_type: UIViewType) -> void:
+	UIManager.register_view_type(view_type)
 
-## 是否已初始化
-func is_initialized() -> bool:
-	return _is_initialized
+## 初始化视图组件
+## [param data] 初始化数据
+func _initialize_view_components(data: Dictionary = {}) -> void:
+	_view_components.clear()
+	
+	# 递归查找所有视图组件
+	_view_components = _find_view_components(_get_view_scene())
+	
+	# 初始化找到的组件
+	for component in _view_components:
+		if component != self and not component._is_initialized:
+			component.initialize(data)
 
-## 播放过渡动画
-func _play_transition(is_enter: bool = true) -> void:
-	if not UIManager.is_module_enabled("transition"): return
-	transition_started.emit(owner)
-	if is_enter:
-		await UIManager.transition_manager.apply_open_transition(owner, transition_name)
-	else:
-		await UIManager.transition_manager.apply_close_transition(owner, transition_name)
-	transition_completed.emit(owner)
+## 销毁视图组件
+func _dispose_view_components() -> void:
+	for component in _view_components:
+		if component != self:
+			component.dispose()
+	_view_components.clear()
 
-## 初始化子视图
-func _initialize_child_views(data: Dictionary) -> void:
-	_refresh_child_components()
-	for component in _cached_child_components:
-		component.initialize(data)
+## 查找视图组件
+## [param root] 根节点
+## [returns] 视图组件列表
+func _find_view_components(root: Node) -> Array[UIViewComponent]:
+	var components: Array[UIViewComponent] = []
+	
+	# 获取所有直接下级视图场景
+	var sub_scenes = get_direct_sub_view_scenes(root)
+	
+	# 获取每个场景的视图组件
+	for scene in sub_scenes:
+		var component = get_view_component(scene)
+		if component and component != self:
+			components.append(component)
+	
+	return components
 
-## 更新子视图
-func _update_child_views(data: Dictionary) -> void:
-	_refresh_child_components()
-	for component in _cached_child_components:
-		if component.should_update(data.keys()):
-			component.update_data(data)
+## 获取当前组件所属的视图场景
+## [returns] 当前组件所属的视图场景节点
+func _get_view_scene() -> Node:
+	return get_parent()
 
-## 销毁子视图
-func _dispose_child_views() -> void:
-	_refresh_child_components()
-	for component in _cached_child_components:
-		component.dispose()
-
-## 应用配置
-## 子类可以重写此方法以实现特定的配置应用逻辑
-func _apply_config() -> void:
+## 子类中实现的初始化方法
+## [param data] 初始化数据
+func _initialized(data: Dictionary = {}) -> void:
 	pass
 
-## 检查数据路径是否匹配
-func should_update(changed_paths: Array) -> bool:
-	# 如果没有指定数据路径，则始终更新
-	if data_paths.is_empty():
-		return true
-	
-	# 检查每个数据路径表达式
-	for path_expr in data_paths:
-		if _path_parser.evaluate(path_expr, changed_paths):
-			return true
-	
-	return false
+## 子类中实现的销毁方法
+func _disposed() -> void:
+	pass
 
-## 设置数据模型
-func set_model(value: ReactiveData) -> void:
-	# 解除旧模型的监听
-	if model:
-		model.value_changed.disconnect(_on_model_value_changed)
-		model.child_value_changed.disconnect(_on_model_child_value_changed)
-	
-	model = value
-	
-	# 设置新模型的监听
-	if model:
-		if not model.value_changed.is_connected(_on_model_value_changed):
-			model.value_changed.connect(_on_model_value_changed)
-		if not model.child_value_changed.is_connected(_on_model_child_value_changed):
-			model.child_value_changed.connect(_on_model_child_value_changed)
-		
-		# 初始更新
-		data_updated.emit(model.to_dict())
+## 节点添加回调
+## [param node] 新节点
+func _on_node_added(node: Node) -> void:
+	# 查找新节点下一级的视图组件并更新缓存
+	var components := _find_view_components(node)
+	for component in components:
+		if not _view_components.has(component):
+			_view_components.append(component)
 
-## 数据变化处理
-func _on_model_value_changed(path: String, old_value: Variant, new_value: Variant) -> void:
-	if should_update([path]):
-		data_updated.emit(model.to_dict())
-
-## 子数据变化处理
-func _on_model_child_value_changed(path: String, old_value: Variant, new_value: Variant) -> void:
-	if should_update([path]):
-		data_updated.emit(model.to_dict())
-
-## 数据路径解析器
-class DataPathParser:
-	# 运算符
-	const OP_AND = "&"
-	const OP_OR = "|"
-	const OP_NOT = "!"
+## 节点移除回调
+## [param node] 要移除的节点
+func _on_node_removed(node: Node) -> void:
+	# 查找要移除的下一级视图组件
+	var components := _find_view_components(node)
 	
-	## 解析并计算路径表达式
-	func evaluate(expr: String, changed_paths: Array) -> bool:
-		# 移除空格
-		expr = expr.strip_edges()
-		
-		# 处理NOT运算
-		if expr.begins_with(OP_NOT):
-			return not evaluate(expr.substr(1), changed_paths)
-		
-		# 处理AND运算
-		if OP_AND in expr:
-			var parts = expr.split(OP_AND)
-			for part in parts:
-				if not evaluate(part.strip_edges(), changed_paths):
-					return false
-			return true
-		
-		# 处理OR运算
-		if OP_OR in expr:
-			var parts = expr.split(OP_OR)
-			for part in parts:
-				if evaluate(part.strip_edges(), changed_paths):
-					return true
-			return false
-		
-		# 基本路径匹配
-		return _match_path(expr, changed_paths)
+	# 从缓存中移除并销毁组件
+	for component in components:
+		if component in _view_components:
+			_view_components.erase(component)
+			component.dispose()
+
+## 数据更新回调
+## [param path] 更新的数据路径
+## [param old_value] 旧值
+## [param new_value] 新值
+func _on_data_changed(path: String, old_value: Variant, new_value: Variant) -> void:
+	data_updated.emit(path, new_value)
+
+## 获取节点的视图组件
+## [param node] 要检查的节点
+## [returns] 如果节点包含视图组件则返回该组件，否则返回null
+static func get_view_component(node: Node) -> UIViewComponent:
+	if not node:
+		return null
 	
-	## 检查基本路径是否匹配
-	func _match_path(path: String, changed_paths: Array) -> bool:
-		for changed_path in changed_paths:
-			# 完全匹配
-			if path == changed_path:
-				return true
-			
-			# 前缀匹配（父路径）
-			if changed_path.begins_with(path + "."):
-				return true
-			
-			# 后缀匹配（子路径）
-			if path.begins_with(changed_path + "."):
-				return true
+	for child in node.get_children():
+		if child is UIViewComponent:
+			return child
+	return null
+
+## 检查节点是否是视图场景（包含视图组件的节点）
+## [param node] 要检查的节点
+## [returns] 如果节点包含视图组件则返回true
+static func is_view_scene(node: Node) -> bool:
+	return get_view_component(node) != null
+
+## 获取节点下所有直接下级视图场景
+## [param root] 根节点
+## [returns] 直接下级视图场景列表
+static func get_direct_sub_view_scenes(root: Node) -> Array[Node]:
+	var scenes: Array[Node] = []
+	if not root:
+		return scenes
+	
+	# 遍历所有子节点
+	var stack = [root]
+	while not stack.is_empty():
+		var current = stack.pop_front()
 		
-		return false
+		# 如果当前节点是视图场景，加入列表
+		if current != root and is_view_scene(current):
+			scenes.append(current)
+			continue  # 不再遍历这个场景的子节点
+		
+		# 将子节点加入栈中继续搜索
+		for child in current.get_children():
+			stack.append(child)
+	
+	return scenes

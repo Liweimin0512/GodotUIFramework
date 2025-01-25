@@ -7,6 +7,7 @@ const BattleTestData = preload("res://addons/GodotUIFramework/examples/core_demo
 @onready var line_edit_username: LineEdit = %LineEditUsername
 @onready var line_edit_password: LineEdit = %LineEditPassword
 @onready var label_message: Label = %LabelMessage
+@onready var ui_scene_component: UISceneComponent = $UISceneComponent
 
 @export var widgets: Array[UIWidgetType] = []
 
@@ -62,7 +63,7 @@ func _login() -> void:
 		"on_completed": func():
 			_on_login_completed()
 	}
-	_loading_widget = await UIManager.widget_manager.create_widget("loading", self, loading_data)
+	_loading_widget = ui_scene_component.create_widget("loading", self, loading_data)
 	_loading_widget.show_loading_screen()
 	
 	# 模拟登录过程
@@ -77,8 +78,8 @@ func _get_player_info(username: String) -> Dictionary:
 
 ## 登录完成回调
 func _on_login_completed() -> void:
-	UIManager.widget_manager.recycle_widget(_loading_widget)
-	await UIManager.scene_manager.switch_scene("lobby_scene", _get_player_info(_username))
+	ui_scene_component.recycle_widget(_loading_widget)
+	ui_scene_component.switch_scene("lobby_scene", _get_player_info(_username))
 
 func _on_button_register_pressed() -> void:
 	pass

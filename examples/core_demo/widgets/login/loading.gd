@@ -7,6 +7,7 @@ signal loading_completed
 
 @onready var _progress_bar: ProgressBar = %ProgressBar
 @onready var label_message: Label = %LabelMessage
+@onready var ui_widget_component: UIWidgetComponent = $UIWidgetComponent
 
 ## 进度
 var _progress: float = 0.0
@@ -28,7 +29,7 @@ func _ready() -> void:
 	modulate.a = 0.0
 
 ## 初始化加载界面
-func _setup(data: Dictionary) -> void:
+func _initialize(data: Dictionary) -> void:
 	if data.has("min_display_time"):
 		_min_display_time = data.min_display_time
 	
@@ -105,8 +106,10 @@ func _cycle_tips() -> void:
 		await get_tree().create_timer(3.0).timeout
 		_cycle_tips()
 
-## 回收时的处理
-func _on_recycle() -> void:
+func _on_ui_widget_component_initialized(data: Dictionary) -> void:
+	_initialize(data)
+
+func _on_ui_widget_component_widget_recycled(data: Dictionary) -> void:
 	_progress = 0.0
 	_start_time = 0.0
 	_is_loading = false
