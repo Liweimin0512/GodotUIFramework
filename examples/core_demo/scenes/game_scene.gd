@@ -57,7 +57,7 @@ func _add_battle_log(text: String) -> void:
 	var battle_log = GameDataTypes.BattleLogData.new(text)
 	scene_component.update_data({
 		"battle_log": battle_log.to_dict()
-	})
+	}, ["battle_log"])
 
 ## 更新场景数据
 func _update_scene_data() -> void:

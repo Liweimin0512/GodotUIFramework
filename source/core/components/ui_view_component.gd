@@ -14,6 +14,17 @@ signal data_updating(path: String, value: Variant)
 ## 数据更新后
 signal data_updated(path: String, value: Variant)
 
+## 数据绑定路径
+@export var data_paths: Array[String]:
+	set(value):
+		data_paths = value
+		# if Engine.is_editor_hint():
+		# 	return
+		if _is_initialized:
+			push_warning("Cannot change data paths after initialization")
+			return
+		_update_paths = value
+
 ## 初始化时注册的视图类型数据
 @export var view_types : Array[UIViewType] = []
 ## 视图配置
@@ -38,6 +49,7 @@ var model: ReactiveData:
 
 # 内部变量
 var _is_initialized: bool = false          # 是否已初始化
+var _update_paths: Array[String] = []      # 更新路径列表
 var _view_components: Array[UIViewComponent] = []  # 视图组件列表
 var _config: UIViewType                    # 内部配置引用
 
@@ -46,10 +58,14 @@ func _ready() -> void:
 	for view_type in view_types:
 		UIManager.register_view_type(view_type)
 	
-	if not Engine.is_editor_hint():
-		# 设置初始配置
-		_config = config
-	
+	# 设置初始配置
+	_config = config
+	# 设置更新路径
+	_update_paths = data_paths
+
+	# 查找子视图组件
+	_view_components = _find_view_components(_get_view_scene())
+
 func _exit_tree() -> void:
 	for view_type in view_types:
 		UIManager.unregister_view_type(view_type)
@@ -115,7 +131,6 @@ func update_data(data: Dictionary, paths: Array[String] = []) -> void:
 		push_error("Update data must be a Dictionary")
 		return
 	
-	var _update_paths := config.data_paths
 	# 更新路径列表
 	var update_paths := paths if not paths.is_empty() else _update_paths
 	
@@ -149,11 +164,7 @@ func register_view_type(view_type: UIViewType) -> void:
 ## 初始化视图组件
 ## [param data] 初始化数据
 func _initialize_view_components(data: Dictionary = {}) -> void:
-	_view_components.clear()
-	
-	# 递归查找所有视图组件
-	_view_components = _find_view_components(_get_view_scene())
-	
+
 	# 初始化找到的组件
 	for component in _view_components:
 		if component != self and not component._is_initialized:
@@ -218,12 +229,20 @@ func _on_node_removed(node: Node) -> void:
 			_view_components.erase(component)
 			component.dispose()
 
-## 数据更新回调
-## [param path] 更新的数据路径
-## [param old_value] 旧值
-## [param new_value] 新值
-func _on_data_changed(path: String, old_value: Variant, new_value: Variant) -> void:
-	data_updated.emit(path, new_value)
+## 处理数据更新
+## [param path] 更新路径
+## [param value] 更新值
+func _on_data_changed(path: String, _old_value: Variant, value: Variant) -> void:
+	push_warning("[UIViewComponent] Data changed: path=%s, update_paths=%s" % [path, _update_paths])
+	
+	# 检查是否在更新路径列表中
+	if path in _update_paths or path == "":
+		push_warning("[UIViewComponent] Path matched, emitting data_updated")
+		data_updated.emit(path, value)
+	
+	# 通知子组件
+	for component in _view_components:
+		component.update_data({path: value})
 
 ## 获取节点的视图组件
 ## [param node] 要检查的节点

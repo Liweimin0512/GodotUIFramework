@@ -20,6 +20,10 @@ const GameDataTypes = preload("res://addons/GodotUIFramework/examples/core_demo/
 
 var game_data: GameDataTypes.GameSceneData
 
+func _enter_tree() -> void:
+	ui_widget_component = $UIWidgetComponent
+	ui_widget_component.data_paths = [character_type]
+
 func _ready() -> void:
 	ui_widget_component.initialized.connect(_on_initialized)
 	ui_widget_component.data_updated.connect(_on_data_updated)

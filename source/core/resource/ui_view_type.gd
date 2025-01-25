@@ -3,7 +3,7 @@ extends Resource
 class_name UIViewType
 
 ## UI视图类型基类
-## 提供基础的UI资源类型功能
+## 提供基础的UI资源类型功能，用于定义视图的加载和缓存策略
 
 ## 预加载模式
 enum PRELOAD_MODE { 
@@ -18,16 +18,14 @@ enum CACHE_MODE {
 	}
 
 # 属性
-## 视图ID
+## 视图ID，用于唯一标识视图类型
 @export var ID: StringName
-## 场景路径
+## 场景路径，指向视图的场景文件
 @export_file("*.tscn") var scene_path: String
-## 预加载模式
+## 预加载模式，控制视图资源的加载时机
 @export var preload_mode: PRELOAD_MODE = PRELOAD_MODE.NONE
-## 缓存模式
+## 缓存模式，控制视图实例的缓存策略
 @export var cache_mode: CACHE_MODE = CACHE_MODE.NONE
-## 数据绑定路径
-@export var data_paths: Array[String]
 
 ## 验证配置
 func validate() -> bool:
@@ -52,5 +50,4 @@ func duplicate_type() -> UIViewType:
 	copy.scene_path = scene_path
 	copy.preload_mode = preload_mode
 	copy.cache_mode = cache_mode
-	copy.data_paths = data_paths.duplicate()
 	return copy

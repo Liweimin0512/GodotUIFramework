@@ -14,7 +14,6 @@ ID = &""
 scene_path = ""
 preload_mode = 0
 cache_mode = 0
-data_paths = Array[String]([])
 
 [node name="CharacterStatus" type="MarginContainer"]
 offset_right = 40.0

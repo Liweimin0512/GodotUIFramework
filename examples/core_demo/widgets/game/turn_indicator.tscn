@@ -13,7 +13,6 @@ ID = &""
 scene_path = ""
 preload_mode = 0
 cache_mode = 0
-data_paths = Array[String]([])
 
 [node name="TurnIndicator" type="MarginContainer"]
 anchors_preset = 5
@@ -35,5 +34,6 @@ vertical_alignment = 1
 
 [node name="UIWidgetComponent" type="Node" parent="."]
 script = ExtResource("1_kawl0")
+data_paths = Array[String](["turn_count", "state"])
 config = SubResource("Resource_2lecx")
 metadata/_custom_type_script = ExtResource("1_kawl0")

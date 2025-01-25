@@ -18,4 +18,3 @@ ID = &"game_scene"
 scene_path = "uid://c56s2t71il4os"
 preload_mode = 1
 cache_mode = 1
-data_paths = Array[String](["battle_log"])

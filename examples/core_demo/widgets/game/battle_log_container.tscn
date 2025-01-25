@@ -13,7 +13,6 @@ ID = &""
 scene_path = ""
 preload_mode = 0
 cache_mode = 0
-data_paths = Array[String](["battle_log"])
 
 [node name="BattleLogContainer" type="MarginContainer"]
 custom_minimum_size = Vector2(255, 0)
@@ -57,5 +56,6 @@ fit_content = true
 
 [node name="UIWidgetComponent" type="Node" parent="."]
 script = ExtResource("2_eivxp")
+data_paths = Array[String](["battle_log"])
 config = SubResource("Resource_86xd7")
 metadata/_custom_type_script = ExtResource("2_eivxp")
