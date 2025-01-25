@@ -2,11 +2,15 @@ extends Control
 
 ## 登录场景：基础UI交互
 
+const BattleTestData = preload("res://addons/GodotUIFramework/examples/core_demo/data/battle_test_data.gd")
+
 @onready var line_edit_username: LineEdit = %LineEditUsername
 @onready var line_edit_password: LineEdit = %LineEditPassword
 @onready var label_message: Label = %LabelMessage
 
 @export var widgets: Array[UIWidgetType] = []
+
+var _loading_widget : Control
 
 ## 测试用登录数据
 var login_data : Array = [
@@ -19,21 +23,7 @@ var login_data : Array = [
 			"password": "123"			
 		}
 	]
-## 测试用用户数据
-var player_infos : Dictionary = {
-	"test" : {
-		"name" : "Test",
-		"level" : 1,
-		"experience" : 0,
-		"avatar" : "res://icon.svg"
-	},
-	"test2":{
-		"name" : "Test2",
-		"level" : 2,
-		"experience" : 10, # 经验值
-		"avatar" : "res://icon.svg",
-	}
-}
+
 var _username : String = ""
 
 func _ready() -> void:
@@ -72,26 +62,23 @@ func _login() -> void:
 		"on_completed": func():
 			_on_login_completed()
 	}
-	var loading = await UIManager.widget_manager.create_widget("loading", self, loading_data)
-	loading.show_loading_screen()
+	_loading_widget = await UIManager.widget_manager.create_widget("loading", self, loading_data)
+	_loading_widget.show_loading_screen()
 	
 	# 模拟登录过程
 	var tween = create_tween()
 	tween.tween_method(func(progress: float):
-		loading.set_progress(progress), 0.0, 1.0, 2.0)
-
+		_loading_widget.set_progress(progress), 0.0, 1.0, 1.5)
 
 ## 获取玩家信息
 func _get_player_info(username: String) -> Dictionary:
-	return player_infos.get(username, {})
+	var player_data : Dictionary = BattleTestData.get_player_init_data(username)
+	return player_data
 
 ## 登录完成回调
 func _on_login_completed() -> void:
-	label_message.hide()
-	var _login_info : Dictionary = _get_player_info(_username)
-	await UIManager.scene_manager.switch_scene("lobby_scene", _login_info)
-
-
+	UIManager.widget_manager.recycle_widget(_loading_widget)
+	await UIManager.scene_manager.switch_scene("lobby_scene", _get_player_info(_username))
 
 func _on_button_register_pressed() -> void:
 	pass

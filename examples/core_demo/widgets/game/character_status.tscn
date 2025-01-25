@@ -41,14 +41,14 @@ text = "Lv.99"
 [node name="HPBar" parent="MarginContainer/VBoxContainer" instance=ExtResource("1_mf70p")]
 unique_name_in_owner = true
 layout_mode = 2
-progress_color = Color(1, 0, 0, 1)
 
 [node name="MPBar" parent="MarginContainer/VBoxContainer" instance=ExtResource("1_mf70p")]
 unique_name_in_owner = true
 layout_mode = 2
-status_name = "mana"
-progress_color = Color(0, 0.00784314, 1, 1)
+status_type = "mana"
+progress_color = Color(0.0392157, 0.0705882, 1, 1)
 
 [node name="UIWidgetComponent" type="Node" parent="."]
 script = ExtResource("3_6kktp")
+data_paths = Array[String](["character.info"])
 metadata/_custom_type_script = ExtResource("3_6kktp")

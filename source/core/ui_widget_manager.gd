@@ -38,7 +38,14 @@ func recycle_widget(widget: Control) -> void:
 		widget.queue_free()
 		return
 	
-	if component.reusable:
+	# 获取widget类型
+	var widget_type := component.config as UIWidgetType
+	if not widget_type:
+		destroy_view(widget)
+		return
+	
+	# 根据widget类型的缓存策略决定是回收还是销毁
+	if widget_type.reusable:
 		# 1. 从父节点移除
 		if widget.get_parent():
 			widget.get_parent().remove_child(widget)
@@ -47,7 +54,7 @@ func recycle_widget(widget: Control) -> void:
 		component.recycle()
 		
 		# 3. 缓存到对象池
-		UIManager.resource_manager.recycle_instance(component.widget_type.ID, widget)
+		UIManager.resource_manager.recycle_instance(widget_type.ID, widget)
 	else:
 		destroy_view(widget)
 
@@ -79,5 +86,5 @@ func get_widget_data(widget: Control) -> Dictionary:
 ## 更新组件数据
 ## [param widget] 组件实例
 ## [param data] 更新的数据
-func update_widget_data(widget: Control, data: Dictionary) -> void:
-	update_view_data(widget, data)
+func update_widget_data(widget: Control, data: Dictionary, paths: Array[String] = []) -> void:
+	update_view_data(widget, data, paths)

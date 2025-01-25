@@ -153,6 +153,18 @@ func close_group_scenes(group_id: StringName) -> void:
 func get_scene_component(scene: Control) -> UISceneComponent:
 	return UIManager.get_scene_component(scene)
 
+## 获取场景数据
+## [param scene] 场景实例
+## [return] 场景数据
+func get_scene_data(scene: Control) -> Dictionary:
+	return get_view_data(scene)
+
+## 更新场景数据
+## [param scene] 场景实例
+## [param data] 更新的数据
+func update_scene_data(scene: Control, data: Dictionary, paths: Array[String] = []) -> void:
+	update_view_data(scene, data, paths)
+
 ## 获取场景父节点
 func _get_scene_parent(scene_type: UISceneType) -> Node:
 	if not scene_type.group_id.is_empty():
@@ -193,15 +205,3 @@ func _pop_from_group_stack(group_id: StringName, scene: Control) -> void:
 		if previous:
 			previous.show()
 		group_stack_changed.emit(group_id, previous)
-
-## 获取场景数据
-## [param scene] 场景实例
-## [return] 场景数据
-func get_scene_data(scene: Control) -> Dictionary:
-	return get_view_data(scene)
-
-## 更新场景数据
-## [param scene] 场景实例
-## [param data] 更新的数据
-func update_scene_data(scene: Control, data: Dictionary) -> void:
-	update_view_data(scene, data)

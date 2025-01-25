@@ -1,6 +1,6 @@
 [gd_scene load_steps=3 format=3 uid="uid://bg2q1o5wajkqj"]
 
-[ext_resource type="Script" path="res://addons/GodotUIFramework/examples/core_demo/widgets/game/skill_button.gd" id="1_xxxxx"]
+[ext_resource type="Script" uid="uid://dxpb1o06pp6ul" path="res://addons/GodotUIFramework/examples/core_demo/widgets/game/skill_button.gd" id="1_xxxxx"]
 [ext_resource type="Script" uid="uid://1mpayve22prh" path="res://addons/GodotUIFramework/source/core/components/ui_widget_component.gd" id="2_am7yq"]
 
 [node name="SkillButton" type="Button"]

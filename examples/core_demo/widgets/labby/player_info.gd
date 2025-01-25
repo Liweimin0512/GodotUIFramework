@@ -1,5 +1,7 @@
 extends MarginContainer
 
+const GameDataTypes = preload("res://addons/GodotUIFramework/examples/core_demo/data/game_data_types.gd")
+
 @onready var avatar_button: TextureButton = %AvatarButton
 @onready var player_name: Label = %PlayerName
 @onready var player_level: Label = %PlayerLevel
@@ -7,14 +9,11 @@ extends MarginContainer
 signal pressed
 
 func _setup(data: Dictionary) -> void:
-	if "name" in data:
-		player_name.text = data.name
-	if "level" in data:
-		player_level.text = "Lv.%d" % data.level
-	# if "experience" in data:
-	# 	exp_label.text = "Exp: %d" % data.experience
-	if "avatar" in data:
-		avatar_button.texture_normal = load(data.avatar)
+	var player_data : GameDataTypes.CharacterData = GameDataTypes.CharacterData.from_dict(data)
+	player_name.text = player_data.name
+	player_level.text = "Lv.%d" % player_data.level
+	if ResourceLoader.exists(player_data.avatar):
+		avatar_button.texture_normal = load(player_data.avatar)
 
 func _on_gui_input(event: InputEvent) -> void:
 	if event is InputEventMouseButton:

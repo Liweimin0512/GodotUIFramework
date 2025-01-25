@@ -23,4 +23,5 @@ vertical_alignment = 1
 
 [node name="UIWidgetComponent" type="Node" parent="."]
 script = ExtResource("1_kawl0")
+data_paths = Array[String](["turn_count", "state"])
 metadata/_custom_type_script = ExtResource("1_kawl0")

@@ -5,13 +5,17 @@ class_name UIViewComponent
 ## 所有UI组件的基类，提供基本的生命周期和数据管理
 
 ## 视图数据模型
-var model: Dictionary = {}
+var model: ReactiveData:
+	set = set_model
 
 ## 层级
 @export var layer: int = 0
 ## 过渡动画
 @export var transition_name: StringName = ""
-
+## 数据路径数组，支持逻辑表达式
+@export var data_paths: Array[String] = []
+## 路径解析器
+var _path_parser: DataPathParser
 ## 当前状态
 var _is_initialized: bool = false
 
@@ -40,9 +44,13 @@ signal view_disposed(view: Control)
 signal transition_started(view: Control)
 ## 过渡动画结束
 signal transition_completed(view: Control)
-
 ## 配置变更信号
 signal config_changed(old_config: UIViewType, new_config: UIViewType)
+## 数据更新信号
+signal data_updated(data: Dictionary)
+
+func _init() -> void:
+	_path_parser = DataPathParser.new()
 
 func _ready() -> void:
 	# 监听子节点变化
@@ -80,9 +88,10 @@ func initialize(data: Dictionary = {}) -> void:
 	if _is_initialized:
 		return
 		
-	model = data
+	model = ReactiveData.new()
+	model.update_values(data)
 	if owner.has_method("_setup"):
-		owner.call("_setup", model)
+		owner.call("_setup", model.to_dict())
 	
 	# 初始化所有子视图
 	_initialize_child_views(data)
@@ -95,9 +104,11 @@ func initialize(data: Dictionary = {}) -> void:
 
 ## 更新视图数据
 func update_data(data: Dictionary) -> void:
-	model.merge(data, true)
-	if owner.has_method("_refresh"):
-		owner.call("_refresh", model)
+	# 合并数据
+	model.update_values(data)
+	
+	# 发送更新信号
+	data_updated.emit(model.to_dict())
 	
 	# 更新所有子视图
 	_update_child_views(data)
@@ -121,7 +132,7 @@ func dispose() -> void:
 
 ## 获取视图数据
 func get_data() -> Dictionary:
-	return model
+	return model.to_dict()
 
 ## 获取层级
 func get_layer() -> int:
@@ -155,7 +166,8 @@ func _initialize_child_views(data: Dictionary) -> void:
 func _update_child_views(data: Dictionary) -> void:
 	_refresh_child_components()
 	for component in _cached_child_components:
-		component.update_data(data)
+		if component.should_update(data.keys()):
+			component.update_data(data)
 
 ## 销毁子视图
 func _dispose_child_views() -> void:
@@ -167,3 +179,97 @@ func _dispose_child_views() -> void:
 ## 子类可以重写此方法以实现特定的配置应用逻辑
 func _apply_config() -> void:
 	pass
+
+## 检查数据路径是否匹配
+func should_update(changed_paths: Array) -> bool:
+	# 如果没有指定数据路径，则始终更新
+	if data_paths.is_empty():
+		return true
+	
+	# 检查每个数据路径表达式
+	for path_expr in data_paths:
+		if _path_parser.evaluate(path_expr, changed_paths):
+			return true
+	
+	return false
+
+## 设置数据模型
+func set_model(value: ReactiveData) -> void:
+	# 解除旧模型的监听
+	if model:
+		model.value_changed.disconnect(_on_model_value_changed)
+		model.child_value_changed.disconnect(_on_model_child_value_changed)
+	
+	model = value
+	
+	# 设置新模型的监听
+	if model:
+		if not model.value_changed.is_connected(_on_model_value_changed):
+			model.value_changed.connect(_on_model_value_changed)
+		if not model.child_value_changed.is_connected(_on_model_child_value_changed):
+			model.child_value_changed.connect(_on_model_child_value_changed)
+		
+		# 初始更新
+		data_updated.emit(model.to_dict())
+
+## 数据变化处理
+func _on_model_value_changed(path: String, old_value: Variant, new_value: Variant) -> void:
+	if should_update([path]):
+		data_updated.emit(model.to_dict())
+
+## 子数据变化处理
+func _on_model_child_value_changed(path: String, old_value: Variant, new_value: Variant) -> void:
+	if should_update([path]):
+		data_updated.emit(model.to_dict())
+
+## 数据路径解析器
+class DataPathParser:
+	# 运算符
+	const OP_AND = "&"
+	const OP_OR = "|"
+	const OP_NOT = "!"
+	
+	## 解析并计算路径表达式
+	func evaluate(expr: String, changed_paths: Array) -> bool:
+		# 移除空格
+		expr = expr.strip_edges()
+		
+		# 处理NOT运算
+		if expr.begins_with(OP_NOT):
+			return not evaluate(expr.substr(1), changed_paths)
+		
+		# 处理AND运算
+		if OP_AND in expr:
+			var parts = expr.split(OP_AND)
+			for part in parts:
+				if not evaluate(part.strip_edges(), changed_paths):
+					return false
+			return true
+		
+		# 处理OR运算
+		if OP_OR in expr:
+			var parts = expr.split(OP_OR)
+			for part in parts:
+				if evaluate(part.strip_edges(), changed_paths):
+					return true
+			return false
+		
+		# 基本路径匹配
+		return _match_path(expr, changed_paths)
+	
+	## 检查基本路径是否匹配
+	func _match_path(path: String, changed_paths: Array) -> bool:
+		for changed_path in changed_paths:
+			# 完全匹配
+			if path == changed_path:
+				return true
+			
+			# 前缀匹配（父路径）
+			if changed_path.begins_with(path + "."):
+				return true
+			
+			# 后缀匹配（子路径）
+			if path.begins_with(changed_path + "."):
+				return true
+		
+		return false

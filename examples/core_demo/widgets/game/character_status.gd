@@ -1,42 +1,32 @@
+@tool
 extends MarginContainer
 
-## 角色状态显示组件
-## 用于显示角色的基本信息和状态
+## 角色状态组件
+## 用于显示角色的状态信息，包括名称、等级、生命值和魔法值
 
-# 导出变量
-@export var character_type: String = "player"  # "player" 或 "enemy"
+const GameDataTypes = preload("res://addons/GodotUIFramework/examples/core_demo/data/game_data_types.gd")
 
+@export_enum("player", "enemy") var character_type: String = "player":
+	set(value):
+		character_type = value
+		if character_type == "enemy":
+			mp_bar.hide()
 # 节点引用
-@onready var label_name: Label = %LabelName
-@onready var label_level: Label = %LabelLevel
-@onready var health_bar: Node = %HealthStatusProgressBar
-@onready var mana_bar: Node = %ManaStatusProgressBar
+@onready var name_label: Label = %NameLabel
+@onready var level_label: Label = %LevelLabel
+# @onready var hp_bar: MarginContainer = %HPBar
+@onready var mp_bar: MarginContainer = %MPBar
 
-func _ready() -> void:
-	# 隐藏敌人的MP条
-	if character_type == "enemy" and mana_bar:
-		mana_bar.hide()
-
-## 初始化
 func _setup(data: Dictionary) -> void:
-	var char_data = data.get(character_type, {})
-	if not char_data: return
-	
-	# 更新基本信息
-	if label_name:
-		label_name.text = char_data.get("name", "未知")
-	if label_level:
-		label_level.text = "Lv.%d" % char_data.get("level", 1)
+	var character_data := GameDataTypes.CharacterData.from_dict(data)
+	if not character_data: 
+		return
+	_update_display(character_data)
 
-## 刷新显示
 func _refresh(data: Dictionary) -> void:
-	var char_data = data.get(character_type, {})
-	if not char_data: return
-	
-	# 根据状态更新显示样式
-	var state = data.get("state", 0)
-	var is_active = (character_type == "player" and state == 1) or \
-				   (character_type == "enemy" and state == 2)
-	
-	# 当前回合的角色高亮显示
-	modulate = Color.WHITE if is_active else Color(0.7, 0.7, 0.7)
+	var character_data := GameDataTypes.CharacterData.from_dict(data)
+	_update_display(character_data)
+
+func _update_display(character_data: GameDataTypes.CharacterData) -> void:
+	name_label.text = character_data.name
+	level_label.text = "Lv.%d" % character_data.level

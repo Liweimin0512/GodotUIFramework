@@ -15,10 +15,9 @@ var skill_data: Dictionary:
 		_update_display()
 
 # 信号
-signal skill_used(skill_data: Dictionary)
+signal skill_used(skill_data: Dictionary)	## 技能使用
 
 func _ready() -> void:
-	pressed.connect(_on_pressed)
 	_update_display()
 
 ## 初始化

@@ -4,6 +4,7 @@
 [ext_resource type="Script" uid="uid://1mpayve22prh" path="res://addons/GodotUIFramework/source/core/components/ui_widget_component.gd" id="1_p6r1n"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ex84c"]
+bg_color = Color(1, 0, 0, 1)
 
 [node name="StatusProgressBar" type="MarginContainer"]
 custom_minimum_size = Vector2(200, 0)
@@ -26,6 +27,7 @@ size_flags_horizontal = 3
 
 [node name="ProgressBar" type="ProgressBar" parent="HBoxContainer/MarginContainer2"]
 unique_name_in_owner = true
+modulate = Color(1, 0, 0, 1)
 layout_mode = 2
 size_flags_vertical = 1
 theme_override_styles/fill = SubResource("StyleBoxFlat_ex84c")

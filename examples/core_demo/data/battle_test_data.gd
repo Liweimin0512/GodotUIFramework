@@ -6,6 +6,8 @@ extends Node
 const PLAYER_DATA_TEMPLATES := {
 	"test": {
 		"name": "新手冒险者",
+		"avatar": "res://icon.svg",
+		"level": 1,
 		"hp": 100,
 		"max_hp": 100,
 		"mp": 50,
@@ -29,6 +31,8 @@ const PLAYER_DATA_TEMPLATES := {
 	},
 	"test2": {
 		"name": "老练的冒险者",
+		"avatar": "res://icon.svg",
+		"level": 3,
 		"hp": 120,
 		"max_hp": 120,
 		"mp": 80,
