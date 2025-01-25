@@ -44,17 +44,14 @@ func _update_skill_buttons(skills: Array) -> void:
 	for child in button_container.get_children():
 		child.queue_free()
 	
-	var index := 0
 	# 创建新按钮
 	for skill_dict in skills:
 		var skill := GameDataTypes.SkillData.from_dict(skill_dict)
 		if not skill:
 			continue
 		
-		var skill_button := ui_widget_component.create_widget("skill_button", button_container, _game_data.to_dict())
+		var skill_button := ui_widget_component.create_widget("skill_button", button_container, skill_dict)
 		skill_button.skill_used.connect(_on_skill_button_used)
-		skill_button.index = index
-		index += 1
 
 ## 更新MP值
 func _update_mp(mp: int) -> void:

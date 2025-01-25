@@ -14,11 +14,6 @@ const GameDataTypes = preload("res://addons/GodotUIFramework/examples/core_demo/
 # 属性
 var skill: GameDataTypes.SkillData
 var current_mp: int = 0
-var index : int = 0:
-	set(value):
-		index = value
-		skill = GameDataTypes.SkillData.from_dict(game_data.player.skills[index])
-		_update_display()
 var game_data : GameDataTypes.GameSceneData
 
 # 信号
@@ -65,5 +60,5 @@ func _on_pressed() -> void:
 		skill_used.emit(skill)
 
 func _on_initialized(data: Dictionary) -> void:
-	game_data = GameDataTypes.GameSceneData.from_dict(data)
-	
+	skill = GameDataTypes.SkillData.from_dict(data)
+	_update_display()
