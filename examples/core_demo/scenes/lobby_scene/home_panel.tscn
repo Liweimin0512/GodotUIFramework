@@ -1,23 +1,8 @@
-[gd_scene load_steps=6 format=3 uid="uid://bvj8te6sbune5"]
+[gd_scene load_steps=4 format=3 uid="uid://bvj8te6sbune5"]
 
 [ext_resource type="PackedScene" uid="uid://b86cs234vsg4r" path="res://addons/GodotUIFramework/examples/core_demo/widgets/labby/news_item.tscn" id="1_ve62h"]
 [ext_resource type="Script" uid="uid://dod05jn2u0pey" path="res://addons/GodotUIFramework/source/core/components/ui_scene_component.gd" id="2_eiav8"]
 [ext_resource type="Script" uid="uid://cwol0omsjqlwy" path="res://addons/GodotUIFramework/source/core/resource/ui_view_type.gd" id="3_m5wpd"]
-[ext_resource type="Script" uid="uid://cdtge4wnkvm45" path="res://addons/GodotUIFramework/source/core/resource/ui_scene_type.gd" id="4_2qntk"]
-
-[sub_resource type="Resource" id="Resource_mn5uw"]
-script = ExtResource("4_2qntk")
-group_id = &""
-layer = 0
-transition_name = &""
-hide_others = false
-modal = false
-ID = &"home_panel"
-scene_path = ""
-preload_mode = 0
-cache_mode = 1
-pool_capacity = 10
-metadata/_custom_type_script = ExtResource("4_2qntk")
 
 [node name="HomePanel" type="MarginContainer"]
 anchors_preset = 15
@@ -67,5 +52,7 @@ text = "假装有图"
 
 [node name="UISceneComponent" type="Node" parent="."]
 script = ExtResource("2_eiav8")
-view_types = Array[ExtResource("3_m5wpd")]([SubResource("Resource_mn5uw")])
+view_types = Array[ExtResource("3_m5wpd")]([])
+config = null
+data_model = null
 metadata/_custom_type_script = ExtResource("2_eiav8")

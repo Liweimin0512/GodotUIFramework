@@ -112,6 +112,7 @@ text = "StartGame
 [node name="UISceneComponent" type="Node" parent="."]
 script = ExtResource("2_garjm")
 view_types = Array[ExtResource("5_wr5le")]([ExtResource("3_016x6"), ExtResource("4_y2utg"), ExtResource("5_4dfhe")])
+config = null
 data_model = SubResource("Resource_4dfhe")
 metadata/_custom_type_script = ExtResource("2_garjm")
 

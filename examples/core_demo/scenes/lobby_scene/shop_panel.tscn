@@ -148,3 +148,4 @@ data_model = SubResource("Resource_j8j5o")
 metadata/_custom_type_script = ExtResource("2_dx08s")
 
 [connection signal="child_entered_tree" from="." to="." method="_on_child_entered_tree"]
+[connection signal="disposing" from="UISceneComponent" to="." method="_on_ui_scene_component_disposing"]

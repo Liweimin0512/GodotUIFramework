@@ -58,4 +58,5 @@ data_model = SubResource("Resource_5ex76")
 metadata/_custom_type_script = ExtResource("3_xpbv2")
 
 [connection signal="gui_input" from="." to="." method="_on_gui_input"]
+[connection signal="disposing" from="UIWidgetComponent" to="." method="_on_ui_widget_component_disposing"]
 [connection signal="initialized" from="UIWidgetComponent" to="." method="_on_ui_widget_component_initialized"]

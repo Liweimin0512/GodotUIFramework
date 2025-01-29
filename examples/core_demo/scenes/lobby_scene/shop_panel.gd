@@ -29,3 +29,6 @@ func _on_item_clicked(slot_index: int) -> void:
 
 func _on_child_entered_tree(node: Node) -> void:
 	print("0......", node)
+
+func _on_ui_scene_component_disposing() -> void:
+	print("shop panel disposing")

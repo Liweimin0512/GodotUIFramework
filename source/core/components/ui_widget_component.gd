@@ -28,13 +28,10 @@ func _exit_tree() -> void:
 		return
 	for view_type in view_types:
 		UIManager.unregister_view_type(view_type)
-	_disconnect_child_signals(get_parent())
 
 func _ready() -> void:
 	if Engine.is_editor_hint():
 		return
-	get_parent().child_entered_tree.connect(_on_child_entered_tree)
-	get_parent().child_exiting_tree.connect(_on_child_exiting_tree)
 
 #endregion
 
@@ -71,11 +68,12 @@ func _initialize(data: Dictionary = {}) -> void:
 
 ## 销毁组件
 func _dispose() -> void:
+	_child_components = _find_child_components(get_parent())
 	_dispose_child_components()
-	_child_components.clear()
 
 ## 更新组件
 func _update(data: Dictionary = {}) -> void:
+	_child_components = _find_child_components(get_parent())
 	_update_child_components(data)
 
 ## 初始化子视图组件
@@ -88,6 +86,7 @@ func _initialize_child_components(data: Dictionary = {}) -> void:
 
 ## 销毁子视图组件
 func _dispose_child_components() -> void:
+	print("_dispose_child_components", _child_components)
 	for component in _child_components:
 		if component != self:
 			component.dispose()
@@ -136,35 +135,4 @@ func _get_direct_sub_view_scenes(root: Node) -> Array[Node]:
 	
 	return scenes
 
-func _connect_child_signals(node: Node) -> void:
-	# 为每个子节点添加监听
-	node.child_entered_tree.connect(_on_child_entered_tree)
-	node.child_exiting_tree.connect(_on_child_exiting_tree)
-	# 递归处理现有的子节点
-	for child in node.get_children():
-		_connect_child_signals(child)
-
-func _disconnect_child_signals(node: Node) -> void:
-	# 移除监听
-	if node.child_entered_tree.is_connected(_on_child_entered_tree):
-		node.child_entered_tree.disconnect(_on_child_entered_tree)
-	if node.child_exiting_tree.is_connected(_on_child_exiting_tree):
-		node.child_exiting_tree.disconnect(_on_child_exiting_tree)
-	# 递归处理子节点
-	for child in node.get_children():
-		_disconnect_child_signals(child)
-
 #endregion
-
-func _on_child_entered_tree(child: Node) -> void:
-	_connect_child_signals(child)
-	var components = _find_child_components(child)
-	for component in components:
-		if not _child_components.has(component):
-			_child_components.append(component)
-
-func _on_child_exiting_tree(child: Node) -> void:
-	_disconnect_child_signals(child)
-	var components = _find_child_components(child)
-	for component in components:
-		_child_components.erase(component)
