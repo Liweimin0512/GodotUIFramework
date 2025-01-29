@@ -1,70 +1,55 @@
-extends MarginContainer
+extends UIViewComponent
 
 ## 角色状态组件
-## 用于显示角色的状态信息，包括名称、等级、生命值和魔法值
+## 负责显示角色的HP和MP状态
 
-const GameDataTypes = preload("res://addons/GodotUIFramework/examples/core_demo/data/game_data_types.gd")
-
-@export_enum("player", "enemy") var character_type: String = "player":
-	set(value):
-		character_type = value
-		#if character_type == "enemy":
-			#mp_bar.hide()
-
-# 节点引用
-@onready var name_label: Label = %NameLabel
-@onready var level_label: Label = %LevelLabel
-@onready var hp_bar: MarginContainer = %HPBar
-@onready var mp_bar: MarginContainer = %MPBar
-@onready var ui_widget_component: UIWidgetComponent = $UIWidgetComponent
-
-var game_data: GameDataTypes.GameSceneData
-
-func _enter_tree() -> void:
-	ui_widget_component = $UIWidgetComponent
-	ui_widget_component.data_paths = [character_type]
-
-func _ready() -> void:
-	ui_widget_component.initialized.connect(_on_initialized)
-	ui_widget_component.data_updated.connect(_on_data_updated)
-	if character_type == "enemy":
-		mp_bar.hide()
-
-## 处理初始化
-func _on_initialized(data: Dictionary) -> void:
-	game_data = GameDataTypes.GameSceneData.from_dict(data)
-	var character_data : GameDataTypes.CharacterData
-	if character_type == "player":
-		character_data = game_data.player
-	else:
-		character_data = game_data.enemy
-	if not character_data:
-		return
-	_update_display(character_data)
-
-## 处理数据更新
-func _on_data_updated(path: String, value: Variant) -> void:
-	var data = ui_widget_component.get_data()
-	game_data = GameDataTypes.GameSceneData.from_dict(data)
-	var character_data : GameDataTypes.CharacterData
-	if character_type == "player":
-		character_data = game_data.player
-	else:
-		character_data = game_data.enemy
-	if not character_data:
-		return
-	match path:
-		"name", "level", "hp", "max_hp", "mp", "max_mp":
-			_update_display(character_data)
-
-## 更新显示
-func _update_display(character_data: GameDataTypes.CharacterData) -> void:
-	if not is_inside_tree() or Engine.is_editor_hint():
-		return
-		
-	# 更新基本信息
-	name_label.text = character_data.name
-	if character_type == "enemy":
-		level_label.hide()
-	else:
-		level_label.text = "等级 %d" % character_data.level
+#@onready var hp_bar = $HPBar
+#@onready var mp_bar = $MPBar
+#@onready var name_label = $NameLabel
+#
+## 数据模型
+#var _status_data: CharacterStatusData
+#
+#func _ready() -> void:
+	#super._ready()
+	#
+	## 创建数据模型
+	#_status_data = CharacterStatusData.new()
+	#_data_model = _status_data
+#
+#func _initialized(data: Dictionary) -> void:
+	## 监听属性变化
+	#watch("status.hp", _on_hp_changed)
+	#watch("status.mp", _on_mp_changed)
+	#watch("status.max_hp", _on_max_hp_changed)
+	#watch("status.max_mp", _on_max_mp_changed)
+	#
+	## 初始更新
+	#_update_hp_bar(get_value("status.hp", 100), get_value("status.max_hp", 100))
+	#_update_mp_bar(get_value("status.mp", 50), get_value("status.max_mp", 100))
+#
+### 处理HP变化
+#func _on_hp_changed(old_value: int, new_value: int) -> void:
+	#_update_hp_bar(new_value, _status_data.max_hp)
+#
+### 处理MP变化
+#func _on_mp_changed(old_value: int, new_value: int) -> void:
+	#_update_mp_bar(new_value, _status_data.max_mp)
+#
+### 处理最大HP变化
+#func _on_max_hp_changed(old_value: int, new_value: int) -> void:
+	#_update_hp_bar(_status_data.hp, new_value)
+#
+### 处理最大MP变化
+#func _on_max_mp_changed(old_value: int, new_value: int) -> void:
+	#_update_mp_bar(_status_data.mp, new_value)
+#
+### 更新HP进度条
+#func _update_hp_bar(current: int, maximum: int) -> void:
+	#hp_bar.max_value = maximum
+	#hp_bar.value = current
+#
+### 更新MP进度条
+#func _update_mp_bar(current: int, maximum: int) -> void:
+	#mp_bar.max_value = maximum
+	#mp_bar.value = current

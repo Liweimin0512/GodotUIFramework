@@ -5,16 +5,12 @@
 [resource]
 script = ExtResource("1_5403o")
 group_id = &"main"
-group_behavior = 0
-group_type = 0
 layer = 0
 transition_name = &""
 hide_others = true
 modal = false
-reusable = false
-pool_capacity = 10
-auto_expand = true
 ID = &"game_scene"
 scene_path = "uid://c56s2t71il4os"
 preload_mode = 1
 cache_mode = 1
+pool_capacity = 10

@@ -6,24 +6,11 @@
 [ext_resource type="PackedScene" uid="uid://bhn1g0j8mk134" path="res://addons/GodotUIFramework/examples/core_demo/widgets/game/character_status.tscn" id="4_t8t8m"]
 [ext_resource type="PackedScene" uid="uid://cmroh6ct6sgp7" path="res://addons/GodotUIFramework/examples/core_demo/widgets/game/battle_log_container.tscn" id="5_7osvk"]
 [ext_resource type="PackedScene" uid="uid://d34rmdtbdyjkj" path="res://addons/GodotUIFramework/examples/core_demo/widgets/game/skill_buttons.tscn" id="6_afy4p"]
-[ext_resource type="Script" uid="uid://cdtge4wnkvm45" path="res://addons/GodotUIFramework/source/core/resource/ui_scene_type.gd" id="7_wxvy2"]
+[ext_resource type="Script" uid="uid://c6ba7chc4lqax" path="res://addons/GodotUIFramework/source/core/data/ui_data_model.gd" id="8_knaal"]
 
-[sub_resource type="Resource" id="Resource_knaal"]
-script = ExtResource("7_wxvy2")
-group_id = &""
-group_behavior = 0
-group_type = 0
-layer = 0
-transition_name = &""
-hide_others = false
-modal = false
-reusable = false
-pool_capacity = 10
-auto_expand = true
-ID = &""
-scene_path = ""
-preload_mode = 0
-cache_mode = 0
+[sub_resource type="Resource" id="Resource_1f1p1"]
+script = ExtResource("8_knaal")
+data_paths = Array[String]([])
 
 [node name="GameScene" type="Control"]
 layout_mode = 3
@@ -66,7 +53,6 @@ offset_right = -10.0
 offset_bottom = -205.0
 grow_horizontal = 0
 grow_vertical = 0
-character_type = "enemy"
 
 [node name="HPBar" parent="EnemyStatus/MarginContainer/VBoxContainer" index="1"]
 character_type = "enemy"
@@ -86,7 +72,7 @@ layout_mode = 1
 
 [node name="UISceneComponent" type="Node" parent="."]
 script = ExtResource("2_s1qkn")
-config = SubResource("Resource_knaal")
+data_model = SubResource("Resource_1f1p1")
 metadata/_custom_type_script = ExtResource("2_s1qkn")
 
 [editable path="PlayerStatus"]

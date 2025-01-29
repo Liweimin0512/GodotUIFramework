@@ -5,11 +5,12 @@
 [resource]
 script = ExtResource("1_f0vj0")
 group_id = &"main"
+layer = 0
+transition_name = &""
 hide_others = true
-is_modal = false
-block_input = true
+modal = false
 ID = &"login_scene"
 scene_path = "uid://dvj00xb8l1imo"
 preload_mode = 0
-cache_mode = 0
-layer = 0
+cache_mode = 1
+pool_capacity = 10

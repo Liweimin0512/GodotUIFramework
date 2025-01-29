@@ -1,10 +1,44 @@
-[gd_scene load_steps=3 format=3 uid="uid://ov7snxt5cvvf"]
+[gd_scene load_steps=11 format=3 uid="uid://ov7snxt5cvvf"]
 
 [ext_resource type="PackedScene" uid="uid://cxbyew4sgn1m7" path="res://addons/GodotUIFramework/examples/core_demo/widgets/labby/shop_item.tscn" id="1_28f66"]
+[ext_resource type="Script" uid="uid://5p628df06nqf" path="res://addons/GodotUIFramework/examples/core_demo/scenes/lobby_scene/shop_panel.gd" id="1_l4qm2"]
 [ext_resource type="Script" uid="uid://dod05jn2u0pey" path="res://addons/GodotUIFramework/source/core/components/ui_scene_component.gd" id="2_dx08s"]
+[ext_resource type="Script" uid="uid://cwol0omsjqlwy" path="res://addons/GodotUIFramework/source/core/resource/ui_view_type.gd" id="4_m0rwa"]
+[ext_resource type="Script" uid="uid://ccoyeqfqodquq" path="res://addons/GodotUIFramework/source/core/resource/ui_widget_type.gd" id="5_j8j5o"]
+[ext_resource type="Script" uid="uid://cdtge4wnkvm45" path="res://addons/GodotUIFramework/source/core/resource/ui_scene_type.gd" id="6_j8j5o"]
+[ext_resource type="Script" uid="uid://c6ba7chc4lqax" path="res://addons/GodotUIFramework/source/core/data/ui_data_model.gd" id="6_m0rwa"]
+
+[sub_resource type="Resource" id="Resource_hcnj7"]
+script = ExtResource("5_j8j5o")
+ID = &"shop_item"
+scene_path = "uid://cxbyew4sgn1m7"
+preload_mode = 1
+cache_mode = 1
+pool_capacity = 10
+metadata/_custom_type_script = ExtResource("5_j8j5o")
+
+[sub_resource type="Resource" id="Resource_hdfov"]
+script = ExtResource("6_j8j5o")
+group_id = &""
+layer = 0
+transition_name = &""
+hide_others = false
+modal = false
+ID = &"shop_panel"
+scene_path = ""
+preload_mode = 0
+cache_mode = 1
+pool_capacity = 10
+metadata/_custom_type_script = ExtResource("6_j8j5o")
+
+[sub_resource type="Resource" id="Resource_j8j5o"]
+script = ExtResource("6_m0rwa")
+data_paths = Array[String]([])
+metadata/_custom_type_script = ExtResource("6_m0rwa")
 
 [node name="ShopPanel" type="MarginContainer"]
 size_flags_horizontal = 4
+script = ExtResource("1_l4qm2")
 
 [node name="Panel" type="Panel" parent="."]
 layout_mode = 2
@@ -44,6 +78,7 @@ horizontal_scroll_mode = 0
 vertical_scroll_mode = 3
 
 [node name="GridContainer" type="GridContainer" parent="MarginContainer/VBoxContainer/ScrollContainer"]
+unique_name_in_owner = true
 layout_mode = 2
 columns = 6
 
@@ -105,5 +140,11 @@ layout_mode = 2
 layout_mode = 2
 
 [node name="UISceneComponent" type="Node" parent="."]
+unique_name_in_owner = true
 script = ExtResource("2_dx08s")
+view_types = Array[ExtResource("4_m0rwa")]([SubResource("Resource_hcnj7")])
+config = SubResource("Resource_hdfov")
+data_model = SubResource("Resource_j8j5o")
 metadata/_custom_type_script = ExtResource("2_dx08s")
+
+[connection signal="child_entered_tree" from="." to="." method="_on_child_entered_tree"]

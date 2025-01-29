@@ -33,9 +33,9 @@ func _on_button_group_pressed(button: Button) -> void:
 	var button_text := button.text
 	var button_panel: String = _button_scene_map.get(button_text, "")
 	if button_panel.is_empty(): return
-	var panel = await ui_group_component.switch_scene(button_panel)
+	var panel = await ui_group_component.show_scene(button_panel)
 	if panel == null: 
-		push_error("Switch scene failed")
+		push_error("show scene failed")
 		return
 
 func _on_player_info_pressed() -> void:
@@ -52,7 +52,6 @@ func _on_button_start_game_pressed() -> void:
 	)
 	# 切换到游戏场景，并传递初始数据
 	ui_scene_component.switch_scene("game_scene", game_data.to_dict())
-
 
 func _on_ui_scene_component_initialized(data: Dictionary) -> void:
 	_player_data = GameDataTypes.PlayerData.from_dict(data) as GameDataTypes.PlayerData

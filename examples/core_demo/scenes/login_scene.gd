@@ -78,7 +78,7 @@ func _get_player_info(username: String) -> Dictionary:
 
 ## 登录完成回调
 func _on_login_completed() -> void:
-	ui_scene_component.recycle_widget(_loading_widget)
+	ui_scene_component.dispose_widget(_loading_widget)
 	ui_scene_component.switch_scene("lobby_scene", _get_player_info(_username))
 
 func _on_button_register_pressed() -> void:

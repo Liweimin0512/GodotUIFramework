@@ -2,123 +2,169 @@
 extends UIViewComponent
 class_name UIWidgetComponent
 
-## UI控件组件
-## 提供控件特有功能，如对象池和批量操作
+## UI小部件组件
+## 提供可重用UI组件的基础功能
 
-signal widget_recycled(data: Dictionary)
+## 初始化时注册的视图类型数据
+@export var view_types : Array[UIViewType] = []
+## 子视图组件
+var _child_components: Array[UIViewComponent] = []
 
-func _init() -> void:
-	config = UIWidgetType.new()
+#region 生命周期
 
-## 回收控件
-func recycle() -> void:
-	var final_data := get_data()
-	widget_recycled.emit(final_data)
-	
-	if owner:
-		UIManager.recycle_to_pool(config.id, owner)
+func _enter_tree() -> void:
+	if Engine.is_editor_hint():
+		return
+	for view_type in view_types:
+		UIManager.register_view_type(view_type)
+	if not config:
+		push_warning("View config is empty : %s" % get_parent() )
+		config = UIViewType.new()
+	if not data_model:
+		data_model = UIDataModel.new()
 
-## 创建Widget
+func _exit_tree() -> void:
+	if Engine.is_editor_hint():
+		return
+	for view_type in view_types:
+		UIManager.unregister_view_type(view_type)
+	_disconnect_child_signals(get_parent())
+
+func _ready() -> void:
+	if Engine.is_editor_hint():
+		return
+	get_parent().child_entered_tree.connect(_on_child_entered_tree)
+	get_parent().child_exiting_tree.connect(_on_child_exiting_tree)
+
+#endregion
+
+#region 公共接口
+
+## 获取所有子视图组件
+func get_child_components() -> Array[UIViewComponent]:
+	return _child_components
+
+## 创建控件
+## [param id] 控件类型ID
+## [param data] 控件数据
+## [param parent] 父节点
 func create_widget(id: StringName, parent: Node = null, data: Dictionary = {}) -> Control:
-	var widget_type := UIManager.get_view_type(id) as UIWidgetType
-	if not widget_type:
-		push_error("Widget type not found: %s" % id)
-		return null
-	
-	# 从对象池获取实例
-	var widget: Control = null
-	if widget_type.reusable:
-		widget = UIManager.get_from_pool(id)
-	
-	# 创建新实例或重用实例
-	if not widget:
-		# 新建实例时UIManager.create_view会自动初始化组件
-		widget = UIManager.create_view(id, parent, data)
-		if not widget:
-			return null
-	elif parent:
-		parent.add_child(widget)
-		var component = UIManager.get_widget_component(widget)
-		if not component:
-			push_error("Widget component not found: %s" % id)
-			widget.queue_free()
-			return null
-		component.initialize(data)
-	
-	return widget
+	return UIManager.create_view(id, parent, data)
 
-## 回收Widget
-func recycle_widget(widget: Control) -> void:
-	if not widget:
+## 销毁控件
+## [param widget] 控件
+func dispose_widget(widget: Node) -> void:
+	if not UIManager.is_view_component(widget):
+		push_warning("View is not registered: %s" % widget)
 		return
+	UIManager.dispose_view(widget)
+
+#endregion
+
+#region 内部函数
+
+## 初始化组件
+func _initialize(data: Dictionary = {}) -> void:
+	# 查找子视图组件
+	_child_components = _find_child_components(get_parent())
+	_initialize_child_components(data)
+
+## 销毁组件
+func _dispose() -> void:
+	_dispose_child_components()
+	_child_components.clear()
+
+## 更新组件
+func _update(data: Dictionary = {}) -> void:
+	_update_child_components(data)
+
+## 初始化子视图组件
+## [param data] 初始化数据
+func _initialize_child_components(data: Dictionary = {}) -> void:
+	# 初始化找到的组件
+	for component in _child_components:
+		if component != self and not component._is_initialized:
+			component.initialize(data)
+
+## 销毁子视图组件
+func _dispose_child_components() -> void:
+	for component in _child_components:
+		if component != self:
+			component.dispose()
+	_child_components.clear()
+
+## 更新子视图组件
+func _update_child_components(data: Dictionary = {}) -> void:
+	for component in _child_components:
+		if component != self:
+			component.update(data)
+
+## 查找子视图组件
+func _find_child_components(root: Node) -> Array[UIViewComponent]:
+	var components: Array[UIViewComponent] = []
 	
-	var component = UIManager.get_widget_component(widget)
-	if not component:
-		widget.queue_free()
-		return
+	# 获取所有直接下级视图场景
+	var sub_scenes = _get_direct_sub_view_scenes(root)
 	
-	# 获取widget类型
-	var widget_type := component.config as UIWidgetType
-	if not widget_type:
-		widget.queue_free()
-		return
+	# 获取每个场景的视图组件
+	for scene in sub_scenes:
+		var component = UIManager.get_view_component(scene)
+		if component and component != self:
+			components.append(component)
 	
-	# 根据widget类型的缓存策略决定是回收还是销毁
-	if widget_type.reusable:
-		# 1. 从父节点移除
-		if widget.get_parent():
-			widget.get_parent().remove_child(widget)
+	return components
+
+## 获取所有直接下级视图场景
+func _get_direct_sub_view_scenes(root: Node) -> Array[Node]:
+	var scenes: Array[Node] = []
+	if not root:
+		return scenes
+	
+	# 遍历所有子节点
+	var stack = [root]
+	while not stack.is_empty():
+		var current = stack.pop_front()
 		
-		# 2. 重置组件状态
-		component.recycle()
+		# 如果当前节点是视图场景，加入列表
+		if current != root and UIManager.is_view_node(current):
+			scenes.append(current)
+			continue  # 不再遍历这个场景的子节点
 		
-		# 3. 缓存到对象池
-		UIManager.recycle_to_pool(widget_type.ID, widget)
-	else:
-		widget.queue_free()
-
-## 批量创建Widget
-func create_widgets(id: StringName, parent: Node, data_list: Array) -> Array[Control]:
-	var widgets: Array[Control] = []
-	for item_data in data_list:
-		var widget = create_widget(id, parent, item_data)
-		if widget:
-			widgets.append(widget)
-	return widgets
-
-## 批量回收Widget
-func recycle_widgets(widgets: Array) -> void:
-	for widget in widgets:
-		if widget is Control:
-			recycle_widget(widget)
-
-## 注册Widget类型
-func register_widget_type(widget_type: UIWidgetType) -> void:
-	register_view_type(widget_type)
-
-## 获取组件数据
-## [param widget] 组件实例
-## [return] 组件数据
-func get_widget_data(widget: Control) -> Dictionary:
-	if not widget:
-		return {}
+		# 将子节点加入栈中继续搜索
+		for child in current.get_children():
+			stack.append(child)
 	
-	var component = UIManager.get_widget_component(widget)
-	if not component:
-		return {}
-	
-	return component.get_data()
+	return scenes
 
-## 更新组件数据
-## [param widget] 组件实例
-## [param data] 更新的数据
-## [param paths] 更新路径列表
-func update_widget_data(widget: Control, data: Dictionary, paths: Array[String] = []) -> void:
-	if not widget:
-		return
-	
-	var component = UIManager.get_widget_component(widget)
-	if not component:
-		return
-	
-	component.update_data(data, paths)
+func _connect_child_signals(node: Node) -> void:
+	# 为每个子节点添加监听
+	node.child_entered_tree.connect(_on_child_entered_tree)
+	node.child_exiting_tree.connect(_on_child_exiting_tree)
+	# 递归处理现有的子节点
+	for child in node.get_children():
+		_connect_child_signals(child)
+
+func _disconnect_child_signals(node: Node) -> void:
+	# 移除监听
+	if node.child_entered_tree.is_connected(_on_child_entered_tree):
+		node.child_entered_tree.disconnect(_on_child_entered_tree)
+	if node.child_exiting_tree.is_connected(_on_child_exiting_tree):
+		node.child_exiting_tree.disconnect(_on_child_exiting_tree)
+	# 递归处理子节点
+	for child in node.get_children():
+		_disconnect_child_signals(child)
+
+#endregion
+
+func _on_child_entered_tree(child: Node) -> void:
+	_connect_child_signals(child)
+	var components = _find_child_components(child)
+	for component in components:
+		if not _child_components.has(component):
+			_child_components.append(component)
+
+func _on_child_exiting_tree(child: Node) -> void:
+	_disconnect_child_signals(child)
+	var components = _find_child_components(child)
+	for component in components:
+		_child_components.erase(component)

@@ -25,7 +25,9 @@ enum CACHE_MODE {
 ## 预加载模式，控制视图资源的加载时机
 @export var preload_mode: PRELOAD_MODE = PRELOAD_MODE.NONE
 ## 缓存模式，控制视图实例的缓存策略
-@export var cache_mode: CACHE_MODE = CACHE_MODE.NONE
+@export var cache_mode: CACHE_MODE = CACHE_MODE.CACHE_IN_MEMORY
+## 池容量（仅当 cache_mode 为 CACHE_IN_MEMORY 时有效）
+@export var pool_capacity: int = 10
 
 ## 验证配置
 func validate() -> bool:

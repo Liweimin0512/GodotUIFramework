@@ -1,18 +1,12 @@
 [gd_scene load_steps=5 format=3 uid="uid://cmroh6ct6sgp7"]
 
-[ext_resource type="Script" uid="uid://5hafno8bv17p" path="res://addons/GodotUIFramework/examples/core_demo/widgets/game/battle_log_container.gd" id="1_qfbyc"]
+[ext_resource type="Script" uid="uid://rsf5djp7jvyc" path="res://addons/GodotUIFramework/examples/core_demo/widgets/game/battle_log_container.gd" id="1_qfbyc"]
 [ext_resource type="Script" uid="uid://1mpayve22prh" path="res://addons/GodotUIFramework/source/core/components/ui_widget_component.gd" id="2_eivxp"]
-[ext_resource type="Script" uid="uid://ccoyeqfqodquq" path="res://addons/GodotUIFramework/source/core/resource/ui_widget_type.gd" id="3_eivxp"]
+[ext_resource type="Script" uid="uid://c6ba7chc4lqax" path="res://addons/GodotUIFramework/source/core/data/ui_data_model.gd" id="4_86xd7"]
 
-[sub_resource type="Resource" id="Resource_86xd7"]
-script = ExtResource("3_eivxp")
-reusable = false
-pool_capacity = 10
-auto_expand = true
-ID = &""
-scene_path = ""
-preload_mode = 0
-cache_mode = 0
+[sub_resource type="Resource" id="Resource_egc01"]
+script = ExtResource("4_86xd7")
+data_paths = Array[String]([])
 
 [node name="BattleLogContainer" type="MarginContainer"]
 custom_minimum_size = Vector2(255, 0)
@@ -56,6 +50,5 @@ fit_content = true
 
 [node name="UIWidgetComponent" type="Node" parent="."]
 script = ExtResource("2_eivxp")
-data_paths = Array[String](["battle_log"])
-config = SubResource("Resource_86xd7")
+data_model = SubResource("Resource_egc01")
 metadata/_custom_type_script = ExtResource("2_eivxp")

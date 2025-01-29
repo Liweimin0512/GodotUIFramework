@@ -109,7 +109,7 @@ func _cycle_tips() -> void:
 func _on_ui_widget_component_initialized(data: Dictionary) -> void:
 	_initialize(data)
 
-func _on_ui_widget_component_widget_recycled(data: Dictionary) -> void:
+func _on_ui_widget_component_disposing() -> void:
 	_progress = 0.0
 	_start_time = 0.0
 	_is_loading = false

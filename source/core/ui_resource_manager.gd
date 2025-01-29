@@ -4,16 +4,23 @@ class_name UIResourceManager
 ## UI资源管理器
 ## 负责管理UI资源的加载、缓存和对象池
 
+## 资源加载模式
+enum LoadMode { 
+	IMMEDIATE, 		## 立即加载
+	LAZY 			## 懒加载
+	}
+
 # 信号
+## 资源加载信号
 signal resource_loaded(path: String, resource: Resource)
+## 资源卸载信号
 signal resource_unloaded(path: String)
 
 # 内部变量
+## 资源缓存
 var _resource_cache: Dictionary = {}
+## 对象池
 var _instance_pools: Dictionary = {}
-
-## 资源加载模式
-enum LoadMode { IMMEDIATE, LAZY }
 
 ## 加载资源
 ## [param path] 资源路径
@@ -21,6 +28,7 @@ enum LoadMode { IMMEDIATE, LAZY }
 ## [return] 加载的资源
 func load_resource(path: String, mode: LoadMode = LoadMode.IMMEDIATE) -> Resource:
 	if _resource_cache.has(path):
+		# 如果资源已缓存，返回缓存
 		return _resource_cache[path]
 		
 	var resource: Resource
@@ -75,6 +83,14 @@ func recycle_instance(id: StringName, instance: Node) -> void:
 		instance.get_parent().remove_child(instance)
 		
 	_instance_pools[id].append(instance)
+
+## 获取对象池中的实例数量
+## [param id] 实例ID
+## [return] 对象池中的实例数量
+func get_instance_count(id: StringName) -> int:
+	if not _instance_pools.has(id):
+		return 0
+	return _instance_pools[id].size()
 
 ## 处理异步加载
 ## [param delta] 处理间隔

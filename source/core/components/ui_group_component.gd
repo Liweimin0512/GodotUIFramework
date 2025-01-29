@@ -1,20 +1,22 @@
+@tool
 extends Node
 class_name UIGroupComponent
 
 ## UI分组组件
 ## 提供场景分组和管理功能
 
-# 信号
-## 场景创建
-signal scene_created(scene: Control)
-## 场景销毁
-signal scene_disposed(scene: Control)
-## 场景切换
-signal scene_switched(old_scene: Control, new_scene: Control)
-## 场景隐藏
-signal scene_hidden(scene: Control)
+## 分组类型
+enum GROUP_TYPE {
+	EXCLUSIVE,     # 互斥组（同时只能显示一个场景）
+	ADDITIVE,      # 叠加组（可以同时显示多个场景）
+}
+
 ## 场景显示
 signal scene_shown(scene: Control)
+## 场景关闭
+signal scene_closed(scene: Control)
+## 所有场景关闭
+signal all_scene_closed()
 
 # 属性
 ## 分组ID
@@ -25,162 +27,110 @@ signal scene_shown(scene: Control)
 			UIManager.register_group(group_name, self)
 ## 初始化时注册的view
 @export var view_types : Array[UIViewType] = []
+## 分组类型
+@export var group_type: GROUP_TYPE = GROUP_TYPE.EXCLUSIVE
 
 # 内部变量
-var _current_scene: Control = null
-var _scene_stack: Stack = Stack.new()
+## 当前场景
+var _current_scene: Control = null:
+	get:
+		return _scenes.values()[-1]
+	set(_value):
+		push_error("can not set _current_scene")
+## 场景
+var _scenes : Dictionary[StringName, Control] = {}
 
-## 初始化
-func _ready() -> void:
-	if not group_name.is_empty():
-		UIManager.register_group(group_name, self)
+#region 生命周期
+
+func _enter_tree() -> void:
+	if Engine.is_editor_hint():
+		return
+	if group_name.is_empty():
+		push_error("group_name is empty")
+		return
+	UIManager.register_group(group_name, self)
 	for view_type in view_types:
 		UIManager.register_view_type(view_type)
 
-## 销毁
 func _exit_tree() -> void:
-	if not group_name.is_empty():
-		UIManager.unregister_group(group_name)
+	if Engine.is_editor_hint():
+		return
+	if group_name.is_empty():
+		return
+	UIManager.unregister_group(group_name)
 	for view_type in view_types:
 		UIManager.unregister_view_type(view_type)
-	# 清理场景
-	close_all_scenes()
 
-## 创建场景
-## [param id] 场景ID
+#endregion
+
+#region 公共接口
+
+## 显示场景
+## [param id] 场景类型ID
 ## [param data] 场景数据
-## [return] 创建的场景实例
-func create_scene(id: StringName, data: Dictionary = {}) -> Control:
-	var scene_type := UIManager.get_view_type(id) as UISceneType
+## [returns] 创建的场景实例
+func show_scene(id: StringName, data: Dictionary = {}) -> Control:
+	# 根据配置数据选择显示规则
+	var scene_type : UISceneType = UIManager.get_view_type(id) as UISceneType
 	if not scene_type:
 		push_error("Scene type not found: %s" % id)
 		return null
 	
-	# 检查场景类型
-	if scene_type.group_type == UISceneType.GROUP_TYPE.EXCLUSIVE:
-		# 独占场景，关闭其他场景
+	## 检查场景类型
+	if group_type == GROUP_TYPE.EXCLUSIVE:
+		# 互斥组，关闭当前场景
 		close_all_scenes()
-	elif scene_type.group_type == UISceneType.GROUP_TYPE.ADDITIVE:
-		# 叠加场景，根据配置处理其他场景
-		if scene_type.hide_others:
-			hide_other_scenes(null)  # 先隐藏其他场景
-	
-	# 创建场景
-	var scene = UIManager.create_view(id, get_parent(), data)
+	elif scene_type.hide_others:
+		# 叠加组，并且scene_type设置为hide_others，隐藏其他场景
+		close_all_scenes()
+	var scene: Control = _scenes.get(id)
+	if scene:
+		_scenes.erase(id)
+	else:
+		scene = UIManager.create_view(id, get_parent(), data)
 	if not scene:
-		push_error("Failed to create scene: %s" % id)
+		push_error("can not create scene {0} in group {1}".format([id, group_name]))
 		return null
-
+	
 	var view_component := UIManager.get_view_component(scene)
 	if not view_component:
-		push_error("Failed to get view component: %s" % id)
+		push_error("can not get view component from scene {0} in group {1}".format([id, group_name]))
 		return null
-
-	view_component.set("_group", self)	
+	# 将分组注入view_component
+	view_component.set("_group", self)
 
 	# 处理场景堆栈
-	_scene_stack.push(scene)
-	_current_scene = scene
-	
-	scene_created.emit(scene)
+	_scenes[id] = scene
+	scene.show()
+	scene_shown.emit(scene)
 	return scene
 
-## 关闭场景
-## [param scene] 要关闭的场景
+## 关闭指定场景
 func close_scene(scene: Control) -> void:
 	if not scene:
+		push_error("can not close scene, scene is null")
 		return
-	
-	# 从场景堆栈中移除
-	var scenes := _scene_stack.to_array()
-	scenes.erase(scene)
-	_scene_stack.clear()
-	for s in scenes:
-		_scene_stack.push(s)
-	
-	# 更新当前场景
-	if scene == _current_scene:
-		_current_scene = _scene_stack.peek()
-	
-	# 销毁场景
-	var component = UIManager.get_view_component(scene)
-	if component:
-		component.dispose()
-	scene.queue_free()
-	
-	scene_disposed.emit(scene)
-
-## 切换场景
-## [param id] 场景ID
-## [param data] 场景数据
-## [return] 创建的场景实例
-func switch_scene(id: StringName, data: Dictionary = {}) -> Control:
-	var old_scene = _current_scene
-	
-	# 创建新场景
-	var new_scene = create_scene(id, data)
-	if not new_scene:
-		return null
-	
-	# 关闭旧场景
-	if old_scene:
-		close_scene(old_scene)
-	
-	scene_switched.emit(old_scene, new_scene)
-	return new_scene
-
-## 添加场景
-## [param scene] 要添加的场景
-func add_scene(scene: Control) -> void:
-	if not scene:
+	var scene_id := _scenes.find_key(scene)
+	if scene_id == null:
+		push_error("can not close scene, scene is not in group")
 		return
-	
-	_scene_stack.push(scene)
-	_current_scene = scene
-	scene_created.emit(scene)
 
-## 隐藏其他场景
-## [param except] 不隐藏的场景
-func hide_other_scenes(except: Control) -> void:
-	for scene in _scene_stack.to_array():
-		if scene != except:
-			scene.hide()
-			scene_hidden.emit(scene)
-		else:
-			scene.show()
-			scene_shown.emit(scene)
-
-## 显示其他场景
-func show_other_scenes() -> void:
-	for scene in _scene_stack.to_array():
-		if not scene.visible:
-			scene.show()
-			scene_shown.emit(scene)
+	# 关闭场景
+	UIManager.dispose_view(scene)
+	_scenes.erase(scene_id)
+	scene_closed.emit(scene)
 
 ## 关闭所有场景
 func close_all_scenes() -> void:
-	while not _scene_stack.is_empty:
-		var scene = _scene_stack.pop()
-		if scene:
-			var component = UIManager.get_view_component(scene)
-			if component:
-				component.dispose()
-			scene.queue_free()
-			scene_disposed.emit(scene)
-	
-	_current_scene = null
+	for scene in _scenes.values():
+		close_scene(scene)
+	all_scene_closed.emit()
 
-## 获取当前场景
-## [return] 当前场景
-func get_current_scene() -> Control:
-	return _current_scene
+## 关闭当前场景
+func close_current_scene() -> void:
+	if not _current_scene: 
+		push_warning("No current scene to close")
+		return
+	close_scene(_current_scene)	
 
-## 获取场景堆栈
-## [return] 场景堆栈
-func get_scene_stack() -> Array[Control]:
-	return _scene_stack.to_array()
-
-## 获取场景数量
-## [return] 场景数量
-func get_scene_count() -> int:
-	return _scene_stack.size
+#endregion 公共接口

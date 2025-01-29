@@ -3,31 +3,17 @@
 [ext_resource type="Script" uid="uid://ltwauhtm8irk" path="res://addons/GodotUIFramework/examples/core_demo/scenes/lobby_scene.gd" id="1_3vguu"]
 [ext_resource type="Script" uid="uid://dod05jn2u0pey" path="res://addons/GodotUIFramework/source/core/components/ui_scene_component.gd" id="2_garjm"]
 [ext_resource type="PackedScene" uid="uid://jcj6be72bli4" path="res://addons/GodotUIFramework/examples/core_demo/widgets/labby/player_info.tscn" id="2_ka48l"]
-[ext_resource type="Script" uid="uid://cdtge4wnkvm45" path="res://addons/GodotUIFramework/source/core/resource/ui_scene_type.gd" id="2_wr5le"]
 [ext_resource type="Resource" uid="uid://dsvryiqr76p8c" path="res://addons/GodotUIFramework/examples/core_demo/resource/ui_scenes/lobby_scene/home_panel.tres" id="3_016x6"]
 [ext_resource type="Script" uid="uid://drldqlyqnyu6k" path="res://addons/GodotUIFramework/source/core/components/ui_group_component.gd" id="3_ka48l"]
 [ext_resource type="Resource" uid="uid://cymdqfbft0kdm" path="res://addons/GodotUIFramework/examples/core_demo/resource/ui_scenes/lobby_scene/shop_panel.tres" id="4_y2utg"]
 [ext_resource type="Resource" uid="uid://b3j7bhfsmlr8g" path="res://addons/GodotUIFramework/examples/core_demo/resource/ui_scenes/lobby_scene/social_panel.tres" id="5_4dfhe"]
 [ext_resource type="Script" uid="uid://cwol0omsjqlwy" path="res://addons/GodotUIFramework/source/core/resource/ui_view_type.gd" id="5_wr5le"]
+[ext_resource type="Script" uid="uid://c6ba7chc4lqax" path="res://addons/GodotUIFramework/source/core/data/ui_data_model.gd" id="10_y2utg"]
 
 [sub_resource type="ButtonGroup" id="ButtonGroup_wr5le"]
 
-[sub_resource type="Resource" id="Resource_016x6"]
-script = ExtResource("2_wr5le")
-group_id = &""
-group_behavior = 0
-group_type = 0
-layer = 0
-transition_name = &""
-hide_others = false
-modal = false
-reusable = false
-pool_capacity = 10
-auto_expand = true
-ID = &""
-scene_path = ""
-preload_mode = 0
-cache_mode = 0
+[sub_resource type="Resource" id="Resource_4dfhe"]
+script = ExtResource("10_y2utg")
 data_paths = Array[String]([])
 
 [node name="LobbyScene" type="Control"]
@@ -126,7 +112,7 @@ text = "StartGame
 [node name="UISceneComponent" type="Node" parent="."]
 script = ExtResource("2_garjm")
 view_types = Array[ExtResource("5_wr5le")]([ExtResource("3_016x6"), ExtResource("4_y2utg"), ExtResource("5_4dfhe")])
-config = SubResource("Resource_016x6")
+data_model = SubResource("Resource_4dfhe")
 metadata/_custom_type_script = ExtResource("2_garjm")
 
 [connection signal="pressed" from="VBoxContainer/TopBar/HBoxContainer/PlayerInfo" to="." method="_on_player_info_pressed"]
