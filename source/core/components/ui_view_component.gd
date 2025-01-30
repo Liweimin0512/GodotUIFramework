@@ -14,8 +14,8 @@ signal disposing
 signal updated(data: Dictionary)
 
 ## 视图配置
-@export var config: UIViewType
-@export var data_model : UIDataModel
+@export var config: UIViewType = UIViewType.new()
+@export var data_model : UIDataModel = UIDataModel.new()
 
 ## 是否已经初始化
 var _is_initialized := false

@@ -31,3 +31,7 @@ extends UIViewComponent
 	## 滚动到底部
 	#await get_tree().process_frame
 	#log_container.get_parent().scroll_vertical = log_container.get_parent().get_v_scroll_bar().max_value
+
+
+func _on_initialized(data: Dictionary) -> void:
+	pass # Replace with function body.

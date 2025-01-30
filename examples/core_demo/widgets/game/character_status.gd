@@ -53,3 +53,7 @@ extends UIViewComponent
 #func _update_mp_bar(current: int, maximum: int) -> void:
 	#mp_bar.max_value = maximum
 	#mp_bar.value = current
+
+
+func _on_ui_widget_component_initialized(data: Dictionary) -> void:
+	pass # Replace with function body.

@@ -7,6 +7,8 @@
 [sub_resource type="Resource" id="Resource_egc01"]
 script = ExtResource("4_86xd7")
 data_paths = Array[String]([])
+_data = {}
+_watchers = Dictionary[String, Array]({})
 
 [node name="BattleLogContainer" type="MarginContainer"]
 custom_minimum_size = Vector2(255, 0)
@@ -52,3 +54,5 @@ fit_content = true
 script = ExtResource("2_eivxp")
 data_model = SubResource("Resource_egc01")
 metadata/_custom_type_script = ExtResource("2_eivxp")
+
+[connection signal="initialized" from="." to="." method="_on_initialized"]

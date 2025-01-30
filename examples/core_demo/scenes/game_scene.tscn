@@ -1,16 +1,43 @@
-[gd_scene load_steps=9 format=3 uid="uid://c56s2t71il4os"]
+[gd_scene load_steps=13 format=3 uid="uid://c56s2t71il4os"]
 
 [ext_resource type="Script" uid="uid://b5ujn1ntx2its" path="res://addons/GodotUIFramework/examples/core_demo/scenes/game_scene.gd" id="1_ua1ap"]
 [ext_resource type="Script" uid="uid://dod05jn2u0pey" path="res://addons/GodotUIFramework/source/core/components/ui_scene_component.gd" id="2_s1qkn"]
 [ext_resource type="PackedScene" uid="uid://c0k22an14hpxm" path="res://addons/GodotUIFramework/examples/core_demo/widgets/game/turn_indicator.tscn" id="3_ocqvj"]
+[ext_resource type="Script" uid="uid://cwol0omsjqlwy" path="res://addons/GodotUIFramework/source/core/resource/ui_view_type.gd" id="4_knaal"]
 [ext_resource type="PackedScene" uid="uid://bhn1g0j8mk134" path="res://addons/GodotUIFramework/examples/core_demo/widgets/game/character_status.tscn" id="4_t8t8m"]
 [ext_resource type="PackedScene" uid="uid://cmroh6ct6sgp7" path="res://addons/GodotUIFramework/examples/core_demo/widgets/game/battle_log_container.tscn" id="5_7osvk"]
 [ext_resource type="PackedScene" uid="uid://d34rmdtbdyjkj" path="res://addons/GodotUIFramework/examples/core_demo/widgets/game/skill_buttons.tscn" id="6_afy4p"]
 [ext_resource type="Script" uid="uid://c6ba7chc4lqax" path="res://addons/GodotUIFramework/source/core/data/ui_data_model.gd" id="8_knaal"]
 
+[sub_resource type="Resource" id="Resource_4sgs7"]
+script = ExtResource("4_knaal")
+ID = &""
+scene_path = ""
+preload_mode = 0
+cache_mode = 1
+pool_capacity = 10
+
+[sub_resource type="Resource" id="Resource_8fmig"]
+script = ExtResource("4_knaal")
+ID = &""
+scene_path = ""
+preload_mode = 0
+cache_mode = 1
+pool_capacity = 10
+
+[sub_resource type="Resource" id="Resource_e3wjh"]
+script = ExtResource("4_knaal")
+ID = &""
+scene_path = ""
+preload_mode = 0
+cache_mode = 1
+pool_capacity = 10
+
 [sub_resource type="Resource" id="Resource_1f1p1"]
 script = ExtResource("8_knaal")
 data_paths = Array[String]([])
+_data = {}
+_watchers = Dictionary[String, Array]({})
 
 [node name="GameScene" type="Control"]
 layout_mode = 3
@@ -39,6 +66,9 @@ offset_right = 220.0
 offset_bottom = -205.0
 grow_vertical = 0
 
+[node name="UIWidgetComponent" parent="PlayerStatus" index="2"]
+config = SubResource("Resource_4sgs7")
+
 [node name="EnemyStatus" parent="." instance=ExtResource("4_t8t8m")]
 unique_name_in_owner = true
 layout_mode = 1
@@ -60,6 +90,9 @@ character_type = "enemy"
 [node name="MPBar" parent="EnemyStatus/MarginContainer/VBoxContainer" index="2"]
 character_type = "enemy"
 
+[node name="UIWidgetComponent" parent="EnemyStatus" index="2"]
+config = SubResource("Resource_8fmig")
+
 [node name="BattleLogContainer" parent="." instance=ExtResource("5_7osvk")]
 unique_name_in_owner = true
 layout_mode = 1
@@ -72,8 +105,12 @@ layout_mode = 1
 
 [node name="UISceneComponent" type="Node" parent="."]
 script = ExtResource("2_s1qkn")
+config = SubResource("Resource_e3wjh")
 data_model = SubResource("Resource_1f1p1")
 metadata/_custom_type_script = ExtResource("2_s1qkn")
+
+[connection signal="initialized" from="UISceneComponent" to="." method="_on_ui_scene_component_initialized"]
+[connection signal="updated" from="UISceneComponent" to="." method="_on_ui_scene_component_updated"]
 
 [editable path="PlayerStatus"]
 [editable path="EnemyStatus"]

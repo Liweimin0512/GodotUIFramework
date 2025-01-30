@@ -39,16 +39,9 @@ var game_data : GameDataTypes.GameSceneData
 func _ready() -> void:
 	_update_appearance()
 	ui_widget_component.initialized.connect(_on_initialized)
-	ui_widget_component.data_updated.connect(_on_data_updated)
 
 ## 处理初始化
 func _on_initialized(data: Dictionary) -> void:
-	game_data = GameDataTypes.GameSceneData.from_dict(data)
-	_update_display()
-
-## 处理数据更新
-func _on_data_updated(path: String, value: Variant) -> void:
-	var data = ui_widget_component.get_data()
 	game_data = GameDataTypes.GameSceneData.from_dict(data)
 	_update_display()
 

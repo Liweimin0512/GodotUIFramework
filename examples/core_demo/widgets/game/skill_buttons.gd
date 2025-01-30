@@ -32,3 +32,6 @@ extends UIViewComponent
 		#button.initialize({
 			#"skill": skill
 		#})
+
+func _on_ui_widget_component_initialized(data: Dictionary) -> void:
+	pass # Replace with function body.

@@ -26,20 +26,6 @@ var player_data: GameDataTypes.CharacterData         ## 玩家数据
 var enemy_data: GameDataTypes.CharacterData          ## 敌人数据
 var turn_count: int = 1                              ## 回合数
 
-func _ready() -> void:
-	# 监听场景事件
-	scene_component.initialized.connect(_on_initialized)
-	skill_buttons.skill_used.connect(_on_skill_button_used)
-
-## 初始化场景
-func _on_initialized(data: Dictionary) -> void:
-	# 初始化数据
-	player_data = GameDataTypes.CharacterData.from_dict(data.get("player", {}))
-	enemy_data = GameDataTypes.CharacterData.from_dict(data.get("enemy", {}))
-	
-	if player_data and enemy_data:
-		_start_battle()
-
 ## 开始战斗
 func _start_battle() -> void:
 	# 设置初始状态
@@ -128,3 +114,9 @@ func _enemy_turn() -> void:
 	
 	# 更新场景数据
 	_update_scene_data()
+
+func _on_ui_scene_component_initialized(data: Dictionary) -> void:
+	_start_battle()
+
+func _on_ui_scene_component_updated(data: Dictionary) -> void:
+	pass # Replace with function body.
