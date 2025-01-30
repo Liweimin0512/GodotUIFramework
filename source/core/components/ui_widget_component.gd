@@ -79,6 +79,8 @@ func _update(data: Dictionary = {}) -> void:
 ## 初始化子视图组件
 ## [param data] 初始化数据
 func _initialize_child_components(data: Dictionary = {}) -> void:
+	if _child_components.is_empty(): return
+	print("_initialize_child_components", _child_components)
 	# 初始化找到的组件
 	for component in _child_components:
 		if component != self and not component._is_initialized:
@@ -86,6 +88,7 @@ func _initialize_child_components(data: Dictionary = {}) -> void:
 
 ## 销毁子视图组件
 func _dispose_child_components() -> void:
+	if _child_components.is_empty(): return
 	print("_dispose_child_components", _child_components)
 	for component in _child_components:
 		if component != self:

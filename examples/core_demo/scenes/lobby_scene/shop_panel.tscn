@@ -34,6 +34,8 @@ metadata/_custom_type_script = ExtResource("6_j8j5o")
 [sub_resource type="Resource" id="Resource_j8j5o"]
 script = ExtResource("6_m0rwa")
 data_paths = Array[String]([])
+_data = {}
+_watchers = Dictionary[String, Array]({})
 metadata/_custom_type_script = ExtResource("6_m0rwa")
 
 [node name="ShopPanel" type="MarginContainer"]
@@ -147,5 +149,5 @@ config = SubResource("Resource_hdfov")
 data_model = SubResource("Resource_j8j5o")
 metadata/_custom_type_script = ExtResource("2_dx08s")
 
-[connection signal="child_entered_tree" from="." to="." method="_on_child_entered_tree"]
 [connection signal="disposing" from="UISceneComponent" to="." method="_on_ui_scene_component_disposing"]
+[connection signal="updated" from="UISceneComponent" to="." method="_on_ui_scene_component_updated"]

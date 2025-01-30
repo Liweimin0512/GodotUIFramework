@@ -8,7 +8,6 @@ func _ready() -> void:
 	for child in grid_container.get_children():
 		grid_container.remove_child(child)
 		child.queue_free()
-	print("_ready")
 
 func _on_initialized(_data: Dictionary = {}) -> void:
 	for child in grid_container.get_children():
@@ -26,9 +25,12 @@ func _on_initialized(_data: Dictionary = {}) -> void:
 
 func _on_item_clicked(slot_index: int) -> void:
 	print("点击了物品：", slot_index)
-
-func _on_child_entered_tree(node: Node) -> void:
-	print("0......", node)
+	scene_component.update({
+		"selected_index": slot_index
+	})
 
 func _on_ui_scene_component_disposing() -> void:
 	print("shop panel disposing")
+
+func _on_ui_scene_component_updated(data: Dictionary) -> void:
+	print("shop panel updated: ", data)

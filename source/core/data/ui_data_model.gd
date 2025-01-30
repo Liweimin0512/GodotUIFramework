@@ -14,8 +14,8 @@ signal value_changed(property: String, old_value: Variant, new_value: Variant)
 @export var data_paths: Array[String] = []
 
 # 内部变量
-var _data: Dictionary = {}
-var _watchers: Dictionary[String, Array] = {}
+@export_storage var _data: Dictionary = {}
+@export_storage var _watchers: Dictionary[String, Array] = {}
 
 func initialize(data: Dictionary) -> Dictionary:
 	if not value_changed.is_connected(_on_value_changed):
@@ -27,6 +27,26 @@ func initialize(data: Dictionary) -> Dictionary:
 	# 初始化
 	_initialize()
 	return _data
+
+func update(data: Dictionary) -> Dictionary:
+	var new_data = _filter_data(data)
+	if new_data.is_empty(): 
+		return {}
+	var current_data = _data.duplicate(true)
+	current_data.merge(new_data, true)
+	_update_recursive(current_data, new_data, "")
+	_data = current_data
+	return _data
+
+## 监听数据
+func watch(property: String, callback: Callable) -> void:
+	if not property in _watchers:
+		_watchers[property] = []
+	_watchers[property].append(callback)
+
+## 取消监听数据
+func unwatch(property: String, callback: Callable) -> void:
+	_watchers[property].erase(callback)
 
 ## 获取数据值
 ## [param property] 属性路径
@@ -80,40 +100,42 @@ func _get_value_from_path(path: String) -> Variant:
 	var current = _data
 	var parts = path.split(".")
 	
-	for i in range(parts.size() - 1):
-		var part = parts[i]
-		if not current.has(part):
+	for part in parts:
+		if not current is Dictionary or not current.has(part):
 			return null
 		current = current[part]
-		if not current is Dictionary:
-			return null
 	
-	var last = parts[-1]
-	if not current.has(last):
-		return null
-	
-	return current[last]
+	return current
 
 ## 设置数据路径的值
 func _set_value_to_path(path: String, value: Variant) -> void:
 	var current = _data
 	var parts = path.split(".")
 	
+	# 遍历路径的每一部分，除了最后一个
 	for i in range(parts.size() - 1):
 		var part = parts[i]
-		if not current.has(part):
+		# 如果当前部分不存在，创建一个新的字典
+		if not current.has(part) or not current[part] is Dictionary:
 			current[part] = {}
 		current = current[part]
 	
+	# 设置最后一个部分的值
 	current[parts[-1]] = value
 
-## 监听数据
-func watch(property: String, callback: Callable) -> void:
-	_watchers[property].append(callback)
-
-## 取消监听数据
-func unwatch(property: String, callback: Callable) -> void:
-	_watchers[property].erase(callback)
+## 递归更新数据并触发信号
+func _update_recursive(current: Dictionary, new_data: Dictionary, path: String = "") -> void:
+	for key in new_data:
+		var current_path = path + ("." if not path.is_empty() else "") + key
+		var new_value = new_data[key]
+		var old_value = get_value(current_path)
+		
+		if new_value is Dictionary:
+			if not old_value is Dictionary:
+				set_value(current_path, {})
+			_update_recursive(current[key], new_value, current_path)
+		else:
+			set_value(current_path, new_value)
 
 ## 子类实现：配置
 ## 用于设置数据路径和其他配置
@@ -130,16 +152,14 @@ func _initialize() -> void:
 ## [returns] 筛选后的数据
 func _filter_data(data: Dictionary) -> Dictionary:
 	if data.is_empty():
-		return data
+		return data.duplicate(true)
 	if data_paths.is_empty():
-		return data
+		return data.duplicate(true)
 	var new_data : Dictionary = {}
-	for p in data_paths:
-		var value = data.get(p, null)
-		if value == null:
-			push_error("Missing property: %s" % p)
-			continue
-		new_data[p] = value
+	for key in data:
+		if not key in data_paths: continue
+		var value = data[key]
+		new_data[key] = value
 	return new_data
 
 ## 子类实现：验证属性值

@@ -49,9 +49,10 @@ func dispose() -> void:
 func update(data:Dictionary = {}) -> void:
 	if Engine.is_editor_hint():
 		return
-	var new_data = data_model.update_data(data)
-	_update(new_data)
-	updated.emit(new_data)
+	var new_data = data_model.update(data)
+	if not new_data.is_empty():
+		_update(new_data)
+		updated.emit(new_data)
 
 ## 监听数据
 func watch_data(property: String, callback: Callable) -> void:
