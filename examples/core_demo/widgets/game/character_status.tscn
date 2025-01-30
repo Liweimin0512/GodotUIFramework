@@ -1,9 +1,18 @@
-[gd_scene load_steps=6 format=3 uid="uid://bhn1g0j8mk134"]
+[gd_scene load_steps=8 format=3 uid="uid://bhn1g0j8mk134"]
 
 [ext_resource type="Script" uid="uid://b7sjxwnb05xxl" path="res://addons/GodotUIFramework/examples/core_demo/widgets/game/character_status.gd" id="1_6pjfs"]
 [ext_resource type="PackedScene" uid="uid://co631yynxaumm" path="res://addons/GodotUIFramework/examples/core_demo/widgets/game/status_progress_bar.tscn" id="1_mf70p"]
 [ext_resource type="Script" uid="uid://1mpayve22prh" path="res://addons/GodotUIFramework/source/core/components/ui_widget_component.gd" id="3_6kktp"]
+[ext_resource type="Script" uid="uid://cwol0omsjqlwy" path="res://addons/GodotUIFramework/source/core/resource/ui_view_type.gd" id="4_2moyb"]
 [ext_resource type="Script" uid="uid://c6ba7chc4lqax" path="res://addons/GodotUIFramework/source/core/data/ui_data_model.gd" id="5_2moyb"]
+
+[sub_resource type="Resource" id="Resource_6sdmd"]
+script = ExtResource("4_2moyb")
+ID = &""
+scene_path = ""
+preload_mode = 0
+cache_mode = 1
+pool_capacity = 10
 
 [sub_resource type="Resource" id="Resource_pnvq6"]
 script = ExtResource("5_2moyb")
@@ -59,6 +68,7 @@ progress_color = Color(0.0392157, 0.0705882, 1, 1)
 
 [node name="UIWidgetComponent" type="Node" parent="."]
 script = ExtResource("3_6kktp")
+config = SubResource("Resource_6sdmd")
 data_model = SubResource("Resource_pnvq6")
 metadata/_custom_type_script = ExtResource("3_6kktp")
 

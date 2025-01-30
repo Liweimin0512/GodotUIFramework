@@ -74,7 +74,6 @@ theme_override_constants/margin_bottom = 10
 unique_name_in_owner = true
 script = ExtResource("3_ka48l")
 group_name = &"lobby"
-cache_scenes = null
 metadata/_custom_type_script = ExtResource("3_ka48l")
 
 [node name="BottomBar" type="MarginContainer" parent="VBoxContainer"]

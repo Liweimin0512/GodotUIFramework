@@ -7,15 +7,8 @@ class_name UILocalizedStyleComponent
 ## 样式名称
 @export var style_name: String = "normal"
 
-func update_localization() -> void:
-    if not key or not _owner or not UIManager.is_module_enabled("localization"):
-        return
-        
-    var localization_manager = UIManager.localization_manager
-    if not localization_manager:
-        return
-    
-    var style = localization_manager.get_localized_resource(key)
+func _update_localization() -> void:
+    var style = _localization_manager.get_localized_resource(key)
     if style and _owner is Control:
         match style_type:
             "StyleBox":

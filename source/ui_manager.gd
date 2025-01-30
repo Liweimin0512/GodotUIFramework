@@ -25,6 +25,41 @@ var _resource_manager: UIResourceManager
 var _components : Dictionary
 #endregion
 
+## Theme管理器
+var theme_manager : UIThemeManager:
+	get:
+		return get_module("theme") as UIThemeManager
+	set(value):
+		push_error("theme_manager is read-only")
+## Transition管理器
+var transition_manager : UITransitionManager:
+	get:
+		return get_module("transition") as UITransitionManager
+	set(value):
+		push_error("transition_manager is read-only")
+## Adaptation管理器
+var adaptation_manager : UIAdaptationManager:
+	get:
+		return get_module("adaptation") as UIAdaptationManager
+	set(value):
+		push_error("adaptation_manager is read-only")
+## Localization管理器
+var localization_manager : UILocalizationManager:
+	get:
+		return get_module("localization") as UILocalizationManager
+	set(value):
+		push_error("localization_manager is read-only")
+
+## 模块类映射
+var _module_scripts : Dictionary[StringName, Script] = {
+	"theme": UIThemeManager,
+	"transition": UITransitionManager,
+	"adaptation": UIAdaptationManager,
+	"localization": UILocalizationManager,
+}
+## 模块实例
+var _modules: Dictionary[StringName, RefCounted] = {}
+
 #region 初始化
 func _init() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
@@ -218,3 +253,35 @@ func recycle_to_pool(id: StringName, instance: Node) -> void:
 		instance.queue_free()
 
 #endregion
+
+## 获取模块
+func get_module(module_id: String) -> RefCounted:
+	if not _modules.has(module_id):
+		if is_module_enabled(module_id):
+			_modules[module_id] = _create_module(module_id)
+		else:
+			push_error("模块未启用：" + module_id)
+			return null
+	return _modules[module_id]
+
+## 检查模块是否启用
+func is_module_enabled(module_id: String) -> bool:
+	var setting_name = "godot_ui_framework/modules/" + module_id + "/enabled"
+	# 如果设置不存在，默认为启用
+	if not ProjectSettings.has_setting(setting_name):
+		return true
+	return ProjectSettings.get_setting(setting_name, true)
+
+## 创建模块实例
+func _create_module(module_id: StringName) -> RefCounted:	
+	var script = _module_scripts[module_id]
+	if not script:
+		push_error("无法加载模块脚本：" + module_id)
+		return null
+	
+	var module = script.new()
+	if not module:
+		push_error("无法创建模块实例：" + module_id)
+		return null
+	
+	return module

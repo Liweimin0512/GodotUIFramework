@@ -1,0 +1,14 @@
+{
+	"welcome": "ようこそ、{name}さん！",
+	"select_language": "言語選択：",
+	"text_example": "テキスト翻訳例：",
+	"date_example": "日付時刻フォーマット例：",
+	"number_example": "数値フォーマット例：",
+	"short_date": "短い日付：",
+	"medium_date": "中間日付：",
+	"long_date": "長い日付：",
+	"number": "数値：",
+	"currency": "通貨：",
+	"components_example": "コンポーネント例：",
+	"style_example_button": "スタイル例"
+}

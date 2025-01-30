@@ -1,0 +1,14 @@
+{
+	"welcome": "Welcome, {name}!",
+	"select_language": "Select Language:",
+	"text_example": "Text Translation Example:",
+	"date_example": "Date/Time Format Example:",
+	"number_example": "Number Format Example:",
+	"short_date": "Short Date:",
+	"medium_date": "Medium Date:",
+	"long_date": "Long Date:",
+	"number": "Number:",
+	"currency": "Currency:",
+	"components_example": "Components Example:",
+	"style_example_button": "Style Example"
+}

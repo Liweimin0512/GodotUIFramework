@@ -1,0 +1,188 @@
+[gd_scene load_steps=6 format=3 uid="uid://dm3ski133qdve"]
+
+[ext_resource type="Script" uid="uid://bsxuq4vk1jhde" path="res://addons/GodotUIFramework/examples/localization/localization_example.gd" id="1_xxxxx"]
+[ext_resource type="Script" uid="uid://bk4yogidriu5a" path="res://addons/GodotUIFramework/source/module/localization/components/ui_localized_text_component.gd" id="2_xxxxx"]
+[ext_resource type="Script" uid="uid://dgkcb2v6pur7o" path="res://addons/GodotUIFramework/source/module/localization/components/ui_localized_texture_component.gd" id="3_xxxxx"]
+[ext_resource type="Script" uid="uid://80ndwi5juucs" path="res://addons/GodotUIFramework/source/module/localization/components/ui_localized_audio_component.gd" id="4_xxxxx"]
+[ext_resource type="Script" uid="uid://dtpwpg5etfr7n" path="res://addons/GodotUIFramework/source/module/localization/components/ui_localized_style_component.gd" id="5_xxxxx"]
+
+[node name="LocalizationExample" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_xxxxx")
+
+[node name="ScrollContainer" type="ScrollContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+horizontal_scroll_mode = 0
+vertical_scroll_mode = 3
+
+[node name="VBoxContainer" type="VBoxContainer" parent="ScrollContainer"]
+layout_mode = 2
+size_flags_horizontal = 6
+theme_override_constants/separation = 20
+
+[node name="Title" type="Label" parent="ScrollContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
+text = "Localization Example"
+horizontal_alignment = 1
+
+[node name="LanguageSelector" type="HBoxContainer" parent="ScrollContainer/VBoxContainer"]
+layout_mode = 2
+alignment = 1
+
+[node name="Label" type="Label" parent="ScrollContainer/VBoxContainer/LanguageSelector"]
+layout_mode = 2
+text = "Select Language:"
+
+[node name="UILocalizedTextComponent" type="Node" parent="ScrollContainer/VBoxContainer/LanguageSelector/Label"]
+script = ExtResource("2_xxxxx")
+key = "select_language"
+metadata/_custom_type_script = ExtResource("2_xxxxx")
+
+[node name="LanguageSelector" type="OptionButton" parent="ScrollContainer/VBoxContainer/LanguageSelector"]
+unique_name_in_owner = true
+layout_mode = 2
+selected = 0
+item_count = 3
+popup/item_0/text = "English"
+popup/item_0/id = 0
+popup/item_1/text = "简体中文"
+popup/item_1/id = 1
+popup/item_2/text = "日本語"
+popup/item_2/id = 2
+
+[node name="HSeparator" type="HSeparator" parent="ScrollContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="TextExample" type="VBoxContainer" parent="ScrollContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="ScrollContainer/VBoxContainer/TextExample"]
+layout_mode = 2
+text = "Text Translation Example:"
+
+[node name="UILocalizedTextComponent" type="Node" parent="ScrollContainer/VBoxContainer/TextExample/Label"]
+script = ExtResource("2_xxxxx")
+key = "text_example"
+metadata/_custom_type_script = ExtResource("2_xxxxx")
+
+[node name="WelcomeText" type="Label" parent="ScrollContainer/VBoxContainer/TextExample"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Welcome!"
+
+[node name="UILocalizedTextComponent" type="Node" parent="ScrollContainer/VBoxContainer/TextExample/WelcomeText"]
+script = ExtResource("2_xxxxx")
+key = "welcome"
+params = {
+"name": "User"
+}
+metadata/_custom_type_script = ExtResource("2_xxxxx")
+
+[node name="HSeparator2" type="HSeparator" parent="ScrollContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="DateTimeExample" type="VBoxContainer" parent="ScrollContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="ScrollContainer/VBoxContainer/DateTimeExample"]
+layout_mode = 2
+text = "Date/Time Format Example:"
+
+[node name="UILocalizedTextComponent" type="Node" parent="ScrollContainer/VBoxContainer/DateTimeExample/Label"]
+script = ExtResource("2_xxxxx")
+key = "data_example"
+metadata/_custom_type_script = ExtResource("2_xxxxx")
+
+[node name="DateFormats" type="VBoxContainer" parent="ScrollContainer/VBoxContainer/DateTimeExample"]
+layout_mode = 2
+
+[node name="ShortDate" type="Label" parent="ScrollContainer/VBoxContainer/DateTimeExample/DateFormats"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Short Date: "
+
+[node name="MediumDate" type="Label" parent="ScrollContainer/VBoxContainer/DateTimeExample/DateFormats"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Medium Date: "
+
+[node name="LongDate" type="Label" parent="ScrollContainer/VBoxContainer/DateTimeExample/DateFormats"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Long Date: "
+
+[node name="HSeparator3" type="HSeparator" parent="ScrollContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="NumberExample" type="VBoxContainer" parent="ScrollContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="ScrollContainer/VBoxContainer/NumberExample"]
+layout_mode = 2
+text = "Number Format Example:"
+
+[node name="UILocalizedTextComponent" type="Node" parent="ScrollContainer/VBoxContainer/NumberExample/Label"]
+script = ExtResource("2_xxxxx")
+key = "number_example"
+metadata/_custom_type_script = ExtResource("2_xxxxx")
+
+[node name="Number" type="Label" parent="ScrollContainer/VBoxContainer/NumberExample"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Number: "
+
+[node name="Currency" type="Label" parent="ScrollContainer/VBoxContainer/NumberExample"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Currency: "
+
+[node name="HSeparator4" type="HSeparator" parent="ScrollContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="ComponentsExample" type="VBoxContainer" parent="ScrollContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="ScrollContainer/VBoxContainer/ComponentsExample"]
+layout_mode = 2
+text = "Components Example:"
+
+[node name="UILocalizedTextComponent" type="Node" parent="ScrollContainer/VBoxContainer/ComponentsExample/Label"]
+script = ExtResource("2_xxxxx")
+key = "components_example"
+metadata/_custom_type_script = ExtResource("2_xxxxx")
+
+[node name="TextureExample" type="TextureRect" parent="ScrollContainer/VBoxContainer/ComponentsExample"]
+layout_mode = 2
+stretch_mode = 3
+
+[node name="UILocalizedTextureComponent" type="Node" parent="ScrollContainer/VBoxContainer/ComponentsExample/TextureExample"]
+script = ExtResource("3_xxxxx")
+key = "example_texture"
+metadata/_custom_type_script = ExtResource("3_xxxxx")
+
+[node name="AudioExample" type="AudioStreamPlayer" parent="ScrollContainer/VBoxContainer/ComponentsExample"]
+
+[node name="UILocalizedAudioComponent" type="Node" parent="ScrollContainer/VBoxContainer/ComponentsExample/AudioExample"]
+script = ExtResource("4_xxxxx")
+key = "example_audio"
+metadata/_custom_type_script = ExtResource("4_xxxxx")
+
+[node name="StyleExample" type="Button" parent="ScrollContainer/VBoxContainer/ComponentsExample"]
+layout_mode = 2
+text = "Style Example"
+
+[node name="UILocalizedStyleComponent" type="Node" parent="ScrollContainer/VBoxContainer/ComponentsExample/StyleExample"]
+script = ExtResource("5_xxxxx")
+key = "example_style"
+metadata/_custom_type_script = ExtResource("5_xxxxx")

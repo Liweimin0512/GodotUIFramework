@@ -1,0 +1,14 @@
+{
+	"welcome": "欢迎，{name}！",
+	"select_language": "选择语言：",
+	"text_example": "文本翻译示例：",
+	"date_example": "日期时间格式示例：",
+	"number_example": "数字格式示例：",
+	"short_date": "短日期：",
+	"medium_date": "中等日期：",
+	"long_date": "长日期：",
+	"number": "数字：",
+	"currency": "货币：",
+	"components_example": "组件示例：",
+	"style_example_button": "样式示例"
+}

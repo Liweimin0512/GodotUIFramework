@@ -3,21 +3,21 @@ extends EditorPlugin
 
 const SETTING_PATH = "godot_ui_framework/modules/"
 const MODULES = {
-	"resource": {
-		"name": "Resource Manager",
-		"description": "管理UI资源的加载和缓存",
-		"default": true
-	},
-	"scene": {
-		"name": "Scene Manager",
-		"description": "管理UI场景的生命周期",
-		"default": true
-	},
-	"widget": {
-		"name": "Widget Manager",
-		"description": "管理可重用UI控件",
-		"default": true
-	},
+	# "resource": {
+	# 	"name": "Resource Manager",
+	# 	"description": "管理UI资源的加载和缓存",
+	# 	"default": true
+	# },
+	# "scene": {
+	# 	"name": "Scene Manager",
+	# 	"description": "管理UI场景的生命周期",
+	# 	"default": true
+	# },
+	# "widget": {
+	# 	"name": "Widget Manager",
+	# 	"description": "管理可重用UI控件",
+	# 	"default": true
+	# },
 	"theme": {
 		"name": "Theme Manager",
 		"description": "管理UI主题和样式",
@@ -49,7 +49,6 @@ func _enter_tree() -> void:
 	ProjectSettings.save()
 	# 添加自动加载单例
 	add_autoload_singleton("UIManager", "res://addons/GodotUIFramework/source/ui_manager.gd")
-	# get_tree().node_added.connect(_on_node_added)
 
 func _exit_tree() -> void:
 	# 移除项目设置
@@ -58,16 +57,6 @@ func _exit_tree() -> void:
 	ProjectSettings.save()
 	# 移除自动加载单例
 	remove_autoload_singleton("UIManager")
-
-# func _on_node_added(node : Node) -> void:
-# 	# if node is ViewComponent:
-# 	# 	node.set("_manager", _view_manager)
-# 	if node is UISceneComponent:
-# 		node.set("_manager", UIManager.scene_manager)
-# 	elif node is UIWidgetComponent:
-# 		node.set("_manager", UIManager.widget_manager)
-# 	elif node is UIGroupComponent:
-# 		node.set("_manager", UIManager.scene_manager)
 
 ## 添加模块设置
 func _add_module_settings() -> void:
