@@ -38,7 +38,7 @@ func dispose() -> void:
 	if Engine.is_editor_hint():
 		return
 	if not _is_initialized:
-		push_error("View not initialized")
+		push_error("View not initialized: %s" % get_parent())
 		return
 	_dispose()
 	

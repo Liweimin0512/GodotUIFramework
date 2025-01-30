@@ -14,4 +14,5 @@ script = ExtResource("1_87en6")
 script = ExtResource("2_5dkav")
 group_name = &"main"
 view_types = Array[ExtResource("3_brdht")]([ExtResource("3_nnvp5"), ExtResource("4_t12mt"), ExtResource("5_n328a")])
+cache_scenes = null
 metadata/_custom_type_script = ExtResource("2_5dkav")

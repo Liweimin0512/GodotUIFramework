@@ -211,10 +211,10 @@ func recycle_to_pool(id: StringName, instance: Node) -> void:
 	if not view_type:
 		push_error("View type not found: %s" % id)
 		return
-	if view_type.cache_mode != UIViewType.CACHE_MODE.CACHE_IN_MEMORY:
+	if view_type.cache_mode == UIViewType.CACHE_MODE.CACHE_IN_MEMORY and _resource_manager.get_instance_count(id) < view_type.pool_capacity:
+		_resource_manager.recycle_instance(id, instance)
+	else:
 		instance.get_parent().remove_child(instance)
 		instance.queue_free()
-	else:
-		if _resource_manager.get_instance_count(id) < view_type.pool_capacity:
-			_resource_manager.recycle_instance(id, instance)
+
 #endregion
