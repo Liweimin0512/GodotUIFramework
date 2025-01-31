@@ -11,7 +11,7 @@
 [![GitHub forks](https://img.shields.io/github/forks/Liweimin0512/GodotUIFramework)](https://github.com/Liweimin0512/GodotUIFramework/network)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md)
 
-一个为Godot 4.x设计的高度模块化、易扩展的UI框架。
+一个为Godot 4.x设计的高度模块化、易扩展的UI框架
 
 [快速开始](#快速开始) •
 [文档](#文档) •
@@ -43,11 +43,11 @@
 
 ### 安装
 
-1. 下载最新版本的框架
+1. 从[发布页面](https://github.com/Liweimin0512/GodotUIFramework/releases)下载最新版本
 2. 将`GodotUIFramework`文件夹复制到你的Godot项目的`addons`目录下
 3. 在Godot编辑器中启用插件：项目 -> 项目设置 -> 插件 -> GodotUIFramework -> 启用
 
-### 快速开始
+### 快速上手
 
 ```gdscript
 # 初始化UI管理器
@@ -56,13 +56,13 @@ func _ready():
     
 # 创建一个简单的UI场景
 var scene = UIScene.new()
-scene.add_widget(UILabel.new("Hello, World!"))
+scene.add_widget(UILabel.new("你好，世界！"))
 UIManager.show_scene(scene)
 ```
 
 ## 📚 文档
 
-查看我们的 [文档](docs/) 获取详细信息：
+查看我们的[文档](docs/)获取详细信息：
 
 - [快速入门指南](docs/getting_started.md)
 - [主题系统](docs/theme.md)
@@ -74,19 +74,19 @@ UIManager.show_scene(scene)
 
 ## 🎮 示例
 
-查看我们的 [示例](examples/) 目录获取更多示例：
+查看我们的[示例](examples/)目录获取更多演示：
 
 - 主题切换示例
 - 多语言切换示例
-- 动画效果示例
+- 动画效果展示
 - 响应式布局示例
 - 完整的游戏UI实现
 
 ## 🤝 贡献
 
-我们欢迎任何形式的贡献！请阅读我们的 [贡献指南](CONTRIBUTING.md) 在提交任何更改之前。
+我们欢迎任何形式的贡献！请在提交任何更改之前阅读我们的[贡献指南](CONTRIBUTING.md)。
 
-### 开发设置
+### 开发环境设置
 
 ```bash
 # 克隆仓库
@@ -104,24 +104,24 @@ git clone https://github.com/Liweimin0512/GodotUIFramework.git
 
 如果你遇到任何问题或有任何建议：
 
-1. 查看 [文档](docs/)
-2. 搜索 [已存在的issues](https://github.com/Liweimin0512/GodotUIFramework/issues)
-3. 创建新的 [issue](https://github.com/Liweimin0512/GodotUIFramework/issues/new)
+1. 查看[文档](docs/)
+2. 搜索[已存在的issues](https://github.com/Liweimin0512/GodotUIFramework/issues)
+3. 创建新的[issue](https://github.com/Liweimin0512/GodotUIFramework/issues/new)
 
 ### 社区
 
-- 加入我们的 [Discord 服务器](https://discord.gg/your-discord-link)
-- 关注我们 [Twitter](https://twitter.com/your-twitter-handle)
+- 加入我们的[Discord服务器](https://discord.gg/your-discord-link)
+- 关注我们的[Twitter](https://twitter.com/your-twitter-handle)
 - 为项目点赞 ⭐ 以显示你的支持！
 
-## 🙏鸣谢
+## 🙏 致谢
 
 - 感谢所有为这个项目做出贡献的开发者！
-- 特别感谢 [老李游戏学院](https://wx.zsxq.com/group/28885154818841) 的每一位同学！
-- 由Godot社区 ❤️ 构建
+- 特别感谢[老李游戏学院](https://wx.zsxq.com/group/28885154818841)的每一位同学！
+- 由Godot社区用 ❤️ 构建
 
 ---
 
 <div align="center">
-由Liweimin0512 ❤️ 构建
+由Liweimin0512用 ❤️ 构建
 </div>
