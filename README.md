@@ -110,15 +110,15 @@ git clone https://github.com/Liweimin0512/GodotUIFramework.git
 
 ### 社区
 
-- 加入我们的 [Discord 服务器](https://discord.gg/your-discord-link)
-- 关注我们 [Twitter](https://twitter.com/your-twitter-handle)
+- 加入我们的[Discord服务器](https://discord.gg/97ux5TnY)
+- 关注我们的[itch.io](https://godot-li.itch.io/)
 - 为项目点赞 ⭐ 以显示你的支持！
 
-## 🙏鸣谢
+## 🙏 致谢
 
 - 感谢所有为这个项目做出贡献的开发者！
-- 特别感谢 [老李游戏学院](https://wx.zsxq.com/group/28885154818841) 的每一位同学！
-- 由Godot社区 ❤️ 构建
+- 特别感谢[老李游戏学院](https://wx.zsxq.com/group/28885154818841)的每一位同学！
+- 由Godot社区用 ❤️ 构建
 
 ---
 

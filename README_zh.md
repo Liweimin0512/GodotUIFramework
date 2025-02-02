@@ -52,8 +52,8 @@
 ```gdscript
 # 初始化UI管理器
 func _ready():
-    UIManager.init()
-    
+	UIManager.init()
+	
 # 创建一个简单的UI场景
 var scene = UIScene.new()
 scene.add_widget(UILabel.new("你好，世界！"))
@@ -110,8 +110,8 @@ git clone https://github.com/Liweimin0512/GodotUIFramework.git
 
 ### 社区
 
-- 加入我们的[Discord服务器](https://discord.gg/your-discord-link)
-- 关注我们的[Twitter](https://twitter.com/your-twitter-handle)
+- 加入我们的[Discord服务器](https://discord.gg/97ux5TnY)
+- 关注我们的[itch.io](https://godot-li.itch.io/)
 - 为项目点赞 ⭐ 以显示你的支持！
 
 ## 🙏 致谢
