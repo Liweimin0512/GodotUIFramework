@@ -1,4 +1,4 @@
-[gd_scene load_steps=9 format=3 uid="uid://dvj00xb8l1imo"]
+[gd_scene load_steps=10 format=3 uid="uid://dvj00xb8l1imo"]
 
 [ext_resource type="Script" uid="uid://cbpdbjqbinepa" path="res://addons/GodotUIFramework/examples/core_demo/scenes/login_scene.gd" id="1_xtffd"]
 [ext_resource type="Script" uid="uid://dod05jn2u0pey" path="res://addons/GodotUIFramework/source/core/components/ui_scene_component.gd" id="2_m6s8v"]
@@ -24,9 +24,19 @@ cache_mode = 0
 pool_capacity = 10
 metadata/_custom_type_script = ExtResource("2_xa8fl")
 
+[sub_resource type="Resource" id="Resource_e7spp"]
+script = ExtResource("4_vtpjn")
+ID = &""
+scene_path = ""
+preload_mode = 0
+cache_mode = 1
+pool_capacity = 10
+
 [sub_resource type="Resource" id="Resource_weye7"]
 script = ExtResource("5_xpa10")
 data_paths = Array[String]([])
+_data = {}
+_watchers = Dictionary[String, Array]({})
 metadata/_custom_type_script = ExtResource("5_xpa10")
 
 [node name="LoginScene" type="Control"]
@@ -130,6 +140,7 @@ text = "密码不正确！"
 [node name="UISceneComponent" type="Node" parent="."]
 script = ExtResource("2_m6s8v")
 view_types = Array[ExtResource("4_vtpjn")]([SubResource("Resource_xpa10")])
+config = SubResource("Resource_e7spp")
 data_model = SubResource("Resource_weye7")
 metadata/_custom_type_script = ExtResource("2_m6s8v")
 

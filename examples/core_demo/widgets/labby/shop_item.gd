@@ -8,6 +8,7 @@ var slot_index : int = 0:
 		slot_index = value
 		label.text = str(slot_index)
 
+
 signal item_clicked(item_index: int)
 
 func _on_ui_widget_component_initialized(data: Dictionary) -> void:

@@ -52,8 +52,8 @@
 ```gdscript
 # 初始化UI管理器
 func _ready():
-    UIManager.init()
-    
+	UIManager.init()
+	
 # 创建一个简单的UI场景
 var scene = UIScene.new()
 scene.add_widget(UILabel.new("Hello, World!"))
