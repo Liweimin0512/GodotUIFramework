@@ -21,6 +21,12 @@ signal resource_unloaded(path: String)
 var _resource_cache: Dictionary = {}
 ## 对象池
 var _instance_pools: Dictionary = {}
+## 懒加载时间间隔
+var _lazy_load_interval: float = 1.0
+## 当前懒加载时间
+var _lazy_load_time: float = 0.0
+## 加载中的资源数量
+var _loading_count: int = 0
 
 ## 加载资源
 ## [param path] 资源路径
@@ -40,7 +46,7 @@ func load_resource(path: String, mode: LoadMode = LoadMode.IMMEDIATE) -> Resourc
 	else:
 		ResourceLoader.load_threaded_request(path)
 		_resource_cache[path] = null
-		
+		_loading_count += 1
 	return resource
 
 ## 获取缓存的资源
@@ -95,6 +101,11 @@ func get_instance_count(id: StringName) -> int:
 ## 处理异步加载
 ## [param delta] 处理间隔
 func process(delta: float) -> void:
+	if _loading_count <= 0: return
+	_lazy_load_time += delta
+	if _lazy_load_time < _lazy_load_interval:
+		return
+	_lazy_load_time -= _lazy_load_interval	
 	var loading_paths = []
 	for path in _resource_cache:
 		if _resource_cache[path] == null:
@@ -102,7 +113,15 @@ func process(delta: float) -> void:
 	
 	for path in loading_paths:
 		var status = ResourceLoader.load_threaded_get_status(path)
+		if status != ResourceLoader.THREAD_LOAD_IN_PROGRESS:
+			_loading_count -= 1
+			_resource_cache.erase(path)
 		if status == ResourceLoader.THREAD_LOAD_LOADED:
 			var resource = ResourceLoader.load_threaded_get(path)
 			_resource_cache[path] = resource
 			resource_loaded.emit(path, resource)
+
+## 设置懒加载时间间隔
+## [param interval] 时间间隔
+func set_lazy_load_interval(interval: float) -> void:
+	_lazy_load_interval = interval

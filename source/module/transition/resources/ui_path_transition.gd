@@ -5,7 +5,7 @@ class_name UIPathTransition
 ## 路径类型
 
 ## 路径节点
-@export var path: Path2D
+var path: Path2D
 ## 起始位置（0-1）
 @export var from_offset: float = 0.0
 ## 目标位置（0-1）
