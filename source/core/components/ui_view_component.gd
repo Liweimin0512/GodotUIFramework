@@ -20,6 +20,10 @@ signal updated(data: Dictionary)
 ## 是否已经初始化
 var _is_initialized := false
 
+func _ready() -> void:
+	if not _is_initialized:
+		initialize()
+
 ## 初始化
 func initialize(data: Dictionary = {}) -> void:
 	if Engine.is_editor_hint():

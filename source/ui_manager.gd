@@ -131,12 +131,12 @@ func create_view(id: StringName, parent: Node, data: Dictionary = {}) -> Control
 		return null
 	_components[instance] = component
 	component.config = view_type
+
+	component.initialize(data)
 	
 	# 添加到父节点
 	if parent:
 		parent.add_child(instance)
-	
-	component.initialize(data)
 	
 	return instance
 
